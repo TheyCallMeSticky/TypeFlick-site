@@ -79,6 +79,52 @@
   body {
     font-family: "Manrope", Arial, Helvetica, sans-serif;
   }
+  /* Backgrounds */
+  .bg-primary-100 { background-color: var(--primary-100); }
+  .bg-primary-200 { background-color: var(--primary-200); }
+  .bg-primary-300 { background-color: var(--primary-300); }
+  .bg-accent-100  { background-color: var(--accent-100); }
+  .bg-accent-200  { background-color: var(--accent-200); }
+  .bg-bg-100      { background-color: var(--bg-100); }
+  .bg-bg-200      { background-color: var(--bg-200); }
+  .bg-bg-300      { background-color: var(--bg-300); }
+
+  /* Text */
+  .text-primary-100 { color: var(--primary-100); }
+  .text-primary-200 { color: var(--primary-200); }
+  .text-primary-300 { color: var(--primary-300); }
+  .text-accent-100  { color: var(--accent-100); }
+  .text-accent-200  { color: var(--accent-200); }
+  .text-text-100    { color: var(--text-100); }
+  .text-text-200    { color: var(--text-200); }
+
+  /* Border colors */
+  .border-primary-100 { border-color: var(--primary-100); }
+  .border-primary-200 { border-color: var(--primary-200); }
+  .border-primary-300 { border-color: var(--primary-300); }
+  .border-accent-100  { border-color: var(--accent-100); }
+  .border-accent-200  { border-color: var(--accent-200); }
+  .border-bg-100      { border-color: var(--bg-100); }
+  .border-bg-200      { border-color: var(--bg-200); }
+  .border-bg-300      { border-color: var(--bg-300); }
+
+  /* Fill (SVG icons etc) */
+  .fill-primary-100 { fill: var(--primary-100); }
+  .fill-primary-200 { fill: var(--primary-200); }
+  .fill-primary-300 { fill: var(--primary-300); }
+  .fill-accent-100  { fill: var(--accent-100); }
+  .fill-accent-200  { fill: var(--accent-200); }
+  .fill-text-100    { fill: var(--text-100); }
+  .fill-text-200    { fill: var(--text-200); }
+
+  /* Ring  */
+  .ring-primary-100 { color: var(--primary-100); }
+  .ring-primary-200 { color: var(--primary-200); }
+  .ring-primary-300 { color: var(--primary-300); }
+  .ring-accent-100  { color: var(--accent-100); }
+  .ring-accent-200  { color: var(--accent-200); }
+  .ring-text-100    { color: var(--text-100); }
+  .ring-fill-text-200    { color: var(--text-200); }
 }
 
 @layer base {
@@ -116,6 +162,17 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+  --primary-100: hsl(300, 100%, 50%);
+  --primary-200: hsl(300, 100%, 69%);
+  --primary-300: hsl(300, 100%, 92%);
+  --accent-100: hsl(180, 100%, 50%);
+  --accent-200: hsl(181, 100%, 30%);
+  --text-100: hsl(0, 0%, 100%);
+  --text-200: hsl(0, 0%, 88%);
+  --bg-100: hsl(0, 0%, 10%);
+  --bg-200: hsl(0, 0%, 16%);
+  --bg-300: hsl(0, 0%, 25%);
   }
 
   .dark {
@@ -151,6 +208,17 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+  --primary-100: hsl(300, 100%, 50%);
+  --primary-200: hsl(300, 100%, 69%);
+  --primary-300: hsl(300, 100%, 92%);
+  --accent-100: hsl(180, 100%, 50%);
+  --accent-200: hsl(181, 100%, 30%);
+  --text-100: hsl(0, 0%, 100%);
+  --text-200: hsl(0, 0%, 88%);
+  --bg-100: hsl(0, 0%, 10%);
+  --bg-200: hsl(0, 0%, 16%);
+  --bg-300: hsl(0, 0%, 25%);
   }
 }
 
@@ -193,6 +261,17 @@
   --chart-4: hsl(43 74% 66%);
   --chart-5: hsl(27 87% 67%);
   --radius: 0.6rem;
+  
+  --primary-100: hsl(300, 100%, 50%);
+  --primary-200: hsl(300, 100%, 69%);
+  --primary-300: hsl(300, 100%, 92%);
+  --accent-100: hsl(180, 100%, 50%);
+  --accent-200: hsl(181, 100%, 30%);
+  --text-100: hsl(0, 0%, 100%);
+  --text-200: hsl(0, 0%, 88%);
+  --bg-100: hsl(0, 0%, 10%);
+  --bg-200: hsl(0, 0%, 16%);
+  --bg-300: hsl(0, 0%, 25%);
 }
 
 /*
@@ -224,6 +303,17 @@
   --chart-3: hsl(30 80% 55%);
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
+  
+  --primary-100: hsl(300, 100%, 50%);
+  --primary-200: hsl(300, 100%, 69%);
+  --primary-300: hsl(300, 100%, 92%);
+  --accent-100: hsl(180, 100%, 50%);
+  --accent-200: hsl(181, 100%, 30%);
+  --text-100: hsl(0, 0%, 100%);
+  --text-200: hsl(0, 0%, 88%);
+  --bg-100: hsl(0, 0%, 10%);
+  --bg-200: hsl(0, 0%, 16%);
+  --bg-300: hsl(0, 0%, 25%);
 }
 
 /*

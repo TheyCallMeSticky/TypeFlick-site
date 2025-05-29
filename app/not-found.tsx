@@ -8,16 +8,16 @@ export default function NotFound() {
         <div className="flex justify-center">
           <img src="/logo_no_text.png" alt="TypeFlick Logo" className="h-8" />
         </div>
-        <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
+        <h1 className="text-4xl font-bold text-accent-100 tracking-tight">
           Page Not Found
         </h1>
-        <p className="text-base text-gray-500">
+        <p className="text-base text-text-100">
           The page you are looking for might have been removed, had its name
           changed, or is temporarily unavailable.
         </p>
         <Link
           href="/"
-          className="max-w-48 mx-auto flex justify-center py-2 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+          className="max-w-48 mx-auto flex justify-center py-2 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-bg-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-100"
         >
           Back to Home
         </Link>

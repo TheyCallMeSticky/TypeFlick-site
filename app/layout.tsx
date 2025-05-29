@@ -6,7 +6,7 @@ import { SWRConfig } from 'swr';
 
 export const metadata: Metadata = {
   title: 'TypeFlick',
-  description: 'Generate your type beat video and seo easy and fast'
+  description: 'Genérate your type beat video and seo easy and fast'
 };
 
 export const viewport: Viewport = {
@@ -23,10 +23,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className = {`dark`}
-      // className={`bg-white dark:bg-gray-950 text-black dark:text-white ${manrope.className}`}
+      className={`bg-bg-100 ${manrope.className}`}
     >
-      <body className="min-h-[100dvh] bg-white text-black dark:bg-gray-950 dark:text-white">
+      <body className="min-h-[100dvh] bg-bg-100">
         <SWRConfig
           value={{
             fallback: {
