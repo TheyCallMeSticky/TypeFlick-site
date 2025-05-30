@@ -1,48 +1,45 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import { use, useState, Suspense } from 'react';
-import { Button } from '@/components/ui/button';
-import { CircleIcon, Home, LogOut } from 'lucide-react';
+import Link from 'next/link'
+import { use, useState, Suspense } from 'react'
+import { Button } from '@/components/ui/button'
+import { CircleIcon, Home, LogOut } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { signOut } from '@/app/(login)/actions';
-import { useRouter } from 'next/navigation';
-import { User } from '@/lib/db/schema';
-import useSWR from 'swr';
+} from '@/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { signOut } from '@/app/(login)/actions'
+import { useRouter } from 'next/navigation'
+import { User } from '@/lib/db/schema'
+import useSWR from 'swr'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 function UserMenu() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data: user } = useSWR<User>('/api/user', fetcher);
-  const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { data: user } = useSWR<User>('/api/user', fetcher)
+  const router = useRouter()
 
   async function handleSignOut() {
-    await signOut();
-    router.refresh();
-    router.push('/');
+    await signOut()
+    router.refresh()
+    router.push('/')
   }
 
   if (!user) {
     return (
       <>
-        <Link
-          href="/pricing"
-          className="text-sm font-medium "
-        >
+        <Link href="/pricing" className="text-sm font-medium text-text-200">
           Pricing
         </Link>
-        <Button asChild className="rounded-full">
+        <Button variant="outline" asChild className="rounded-full">
           <Link href="/sign-up">Sign Up</Link>
         </Button>
       </>
-    );
+    )
   }
 
   return (
@@ -75,7 +72,7 @@ function UserMenu() {
         </form>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }
 
 function Header() {
@@ -83,7 +80,7 @@ function Header() {
     <header className="border-b border-bg-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
-          <img src="/logo_text.png" alt="TypeFlick Logo" className="h-8" />
+          <img src="/logo_no_text.png" alt="TypeFlick Logo" className="h-8" />
         </Link>
         <div className="flex items-center space-x-4">
           <Suspense fallback={<div className="h-9" />}>
@@ -92,7 +89,7 @@ function Header() {
         </div>
       </div>
     </header>
-  );
+  )
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -101,5 +98,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Header />
       {children}
     </section>
-  );
+  )
 }
