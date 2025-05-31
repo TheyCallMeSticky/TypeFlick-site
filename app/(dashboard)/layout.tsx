@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { use, useState, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
-import { CircleIcon, Home, LogOut } from 'lucide-react'
+import { Home, LogOut } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { signOut } from '@/app/(login)/actions'
 import { useRouter } from 'next/navigation'
 import { User } from '@/lib/db/schema'
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import { TypeFlickLogoNoText } from '@/components/ui/logo'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
@@ -26,6 +26,7 @@ function UserMenu() {
 
   async function handleSignOut() {
     await signOut()
+    mutate('/api/user', null, { revalidate: false })
     router.refresh()
     router.push('/')
   }

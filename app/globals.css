@@ -73,14 +73,17 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
-}
-
-@layer utilities {
   body {
     font-family: 'Manrope', Arial, Helvetica, sans-serif;
   }
+}
+
+@layer utilities {
   /* Backgrounds */
   .bg-primary-100 {
+    background-color: var(--primary-100);
+  }
+  .hover\:bg-primary-100:hover {
     background-color: var(--primary-100);
   }
   .bg-primary-200 {
@@ -90,6 +93,9 @@
     background-color: var(--primary-300);
   }
   .bg-accent-100 {
+    background-color: var(--accent-100);
+  }
+  .hover\:bg-accent-100:hover {
     background-color: var(--accent-100);
   }
   .bg-accent-200 {

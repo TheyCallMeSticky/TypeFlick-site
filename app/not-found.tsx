@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { CircleIcon } from 'lucide-react'
 import { TypeFlickLogoNoText } from '@/components/ui/logo'
 
 export default function NotFound() {
