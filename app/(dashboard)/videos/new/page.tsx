@@ -50,12 +50,15 @@ export type WizardForm = z.infer<typeof formSchema>
 /* ------------------------------------------------------------------
    2. Template stub (ideally fetched via SWR / trpc)
 -------------------------------------------------------------------*/
-
-const templates = [
-  { id: 1, name: 'Waveform Classic', aspect: '16_9', thumb: '/thumb/free.png' },
-  { id: 2, name: 'Neon Pulses', aspect: '16_9', thumb: '/thumb/base.png' },
-  { id: 3, name: 'Vintage VHS', aspect: '16_9', thumb: '/thumb/vintage.png' }
-]
+interface Template {
+  id: number
+  name: string
+  slug: string
+  aspectRatio: '16_9' | '1_1' | '9_16'
+  thumbnailUrl: string
+  requiredPlan: string
+  config: Record<string, unknown>
+}
 const allPlatforms = [
   { id: 'youtube', label: 'YouTube' },
   { id: 'tiktok', label: 'TikTok' },
@@ -318,12 +321,20 @@ function StepAssets({ control, errors }: any) {
    Step 3 – Template + formats – Template + formats
 -------------------------------------------------------------------*/
 
-function StepTemplateFormat({ control, errors, watch, setValue }: any) {
+export function StepTemplateFormat({ control, errors, watch, setValue }: any) {
   const selectedTemplate = watch('templateId')
   const selectedFormats: string[] = watch('formats')
   const selectedTargets: string[] = watch('publishTargets')
 
+  // Track which formats the user has explicitly toggled
   const [userTouchedFormats, setUserTouchedFormats] = useState<Set<string>>(new Set())
+
+  // Fetch templates from /api/templates
+  const {
+    data: templates,
+    error: tplErr,
+    isLoading: tplLoading
+  } = useSWR<Template[]>('/api/templates', fetcher)
 
   const platformFormats: Record<string, string[]> = {
     youtube: ['16_9'],
@@ -331,12 +342,27 @@ function StepTemplateFormat({ control, errors, watch, setValue }: any) {
     tiktok: ['9_16']
   }
 
-  const handleSelectTemplate = (tplId: number, tplAspect: string) => {
-    setValue('templateId', tplId)
-    // If no format selected yet, default to the template main aspect
-    if (selectedFormats.length === 0) {
-      setValue('formats', [tplAspect])
-    }
+  // If templates are still loading or errored, show a placeholder
+  if (tplLoading) {
+    return (
+      <Card>
+        <CardHeader>Video template & formats</CardHeader>
+        <CardContent>
+          <p>Loading templates…</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (tplErr || !templates) {
+    return (
+      <Card>
+        <CardHeader>Video template & formats</CardHeader>
+        <CardContent>
+          <p className="text-red-600">Failed to load templates.</p>
+        </CardContent>
+      </Card>
+    )
   }
 
   /* ---------- toggle helpers ---------- */
@@ -349,11 +375,12 @@ function StepTemplateFormat({ control, errors, watch, setValue }: any) {
     let nextFormats = [...selectedFormats]
 
     if (isAdding) {
-      // add required formats
-      for (const f of platformFormats[p]) if (!nextFormats.includes(f)) nextFormats.push(f)
+      // add required formats for this platform
+      for (const f of platformFormats[p]) {
+        if (!nextFormats.includes(f)) nextFormats.push(f)
+      }
     } else {
-      // remove formats no longer needed by ANY platform,
-      // unless the user forced them manually
+      // remove formats no longer needed by ANY selected platform
       const stillNeeded = new Set(nextPlatforms.flatMap((pl) => platformFormats[pl]))
       nextFormats = nextFormats.filter((f) => stillNeeded.has(f) || userTouchedFormats.has(f))
     }
@@ -368,46 +395,57 @@ function StepTemplateFormat({ control, errors, watch, setValue }: any) {
       : [...selectedFormats, f]
 
     setValue('formats', next)
-    // remember that user manually touched this format
+    // mark this format as manually toggled
     setUserTouchedFormats((prev) => new Set(prev).add(f))
+  }
+
+  const handleSelectTemplate = (tplId: number, tplAspect: string) => {
+    setValue('templateId', tplId)
+    // If no format is selected yet, default to the template’s main aspect ratio
+    if (selectedFormats.length === 0) {
+      setValue('formats', [tplAspect])
+    }
   }
 
   return (
     <Card>
-      <CardHeader>Video template & formats</CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">
-          Pick a template, then choose one or multiple aspect ratios to generate.
-        </p>
-
+      <CardHeader>Video template, formats & platforms</CardHeader>
+      <CardContent className="space-y-6">
+        {/* ———————— Template Thumbnails ———————— */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {templates.map((tpl) => (
-            <div
-              key={tpl.id}
-              className={`border rounded-xl p-2 cursor-pointer transition ring-offset-2 ${selectedTemplate === tpl.id ? 'ring-2 ring-primary' : ''}`}
-              onClick={() => handleSelectTemplate(tpl.id, tpl.aspect)}
-            >
-              <Image
-                src={tpl.thumb}
-                alt={tpl.name}
-                width={400}
-                height={225}
-                className="rounded-lg"
-              />
-              <p className="mt-2 text-center text-sm font-medium">{tpl.name}</p>
-              <p className="text-center text-xs text-muted-foreground">
-                Default: {tpl.aspect.replace('_', ':')}
-              </p>
-            </div>
-          ))}
+          {templates.map((tpl) => {
+            const isActive = selectedTemplate === tpl.id
+            return (
+              <div
+                key={tpl.id}
+                className={`relative border rounded-xl p-2 cursor-pointer transition ring-offset-2 ${
+                  isActive ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => handleSelectTemplate(tpl.id, tpl.aspectRatio)}
+              >
+                <Image
+                  src={tpl.thumbnailUrl}
+                  alt={tpl.name}
+                  width={400}
+                  height={225}
+                  className="rounded-lg"
+                />
+                <p className="mt-2 text-center text-sm font-medium">{tpl.name}</p>
+                <p className="text-center text-xs text-muted-foreground">
+                  Default: {tpl.aspectRatio.replace('_', ':')}
+                </p>
+              </div>
+            )
+          })}
         </div>
 
         {errors.templateId && (
           <p className="text-red-600 mt-2 text-sm">{errors.templateId.message}</p>
         )}
 
+        {/* ———————— Platforms Checkboxes ———————— */}
         <div>
-          <p className="font-medium mb-2">Publish to :</p>
+          <p className="font-medium mb-2">Publish to:</p>
           <div className="flex flex-wrap gap-4">
             {['youtube', 'instagram', 'tiktok'].map((p) => (
               <label key={p} className="flex items-center gap-2">
@@ -424,9 +462,9 @@ function StepTemplateFormat({ control, errors, watch, setValue }: any) {
           )}
         </div>
 
-        {/* formats -------------------------------------------------- */}
+        {/* ———————— Aspect Ratios Checkboxes ———————— */}
         <div>
-          <p className="font-medium mb-2">Aspect ratios :</p>
+          <p className="font-medium mb-2">Aspect ratios:</p>
           <div className="flex flex-wrap gap-4">
             {['16_9', '1_1', '9_16'].map((f) => (
               <label key={f} className="flex items-center gap-2">
@@ -453,18 +491,26 @@ function StepTemplateFormat({ control, errors, watch, setValue }: any) {
    Step 4 – Review & confirm (remplace ton StepReview actuel)
 -------------------------------------------------------------------*/
 
-function StepReview({ watch }: any) {
+export function StepReview({ watch }: any) {
   const data = watch()
-  const tpl = templates.find((t) => t.id === data.templateId)
+
+  // Fetch templates so we can look up the selected template’s name
+  const {
+    data: templates,
+    error: tplErr,
+    isLoading: tplLoading
+  } = useSWR<Template[]>('/api/templates', fetcher)
+
+  // While loading or on error, we still want to show the review but
+  // skip the template name if it’s not ready yet
+  const tpl = templates?.find((t) => t.id === data.templateId)
 
   const formatLabel = (f: string) => f.replace('_', ':')
-
   const formatBytes = (bytes?: number) => (bytes ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : '—')
 
   return (
     <Card>
-      <CardHeader>Review & confirm</CardHeader>
-
+      <CardHeader>Review &amp; confirm</CardHeader>
       <CardContent className="space-y-3 text-sm">
         <div>
           <span className="font-medium">Primary beatmaker:</span> {data.primaryBeatmaker}
@@ -499,12 +545,14 @@ function StepReview({ watch }: any) {
         )}
 
         <div>
-          <span className="font-medium">Template:</span> {tpl ? tpl.name : '—'}
+          <span className="font-medium">Template:</span>{' '}
+          {tpl ? tpl.name : tplLoading ? 'Loading…' : tplErr ? 'Error' : '—'}
         </div>
 
         <div>
           <span className="font-medium">Formats:</span> {data.formats.map(formatLabel).join(', ')}
         </div>
+
         <div>
           <span className="font-medium">Platforms:</span>{' '}
           {data.publishTargets.map((p: string) => p[0].toUpperCase() + p.slice(1)).join(', ')}
