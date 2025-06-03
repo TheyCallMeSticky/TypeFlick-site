@@ -20,6 +20,11 @@ import {
   videoFormat,
   videoStatus
 } from '@/lib/db/schema'
+import { InferInsertModel, eq } from 'drizzle-orm' // au tout début
+
+type VariantInsert = InferInsertModel<typeof videoVariants>
+type VideoFormat = (typeof videoFormat.enumValues)[number]
+type VideoStatus = (typeof videoStatus.enumValues)[number]
 
 /* ------------------------------------------------------------------
    1. Schéma d'entrée (création de job)
@@ -42,6 +47,7 @@ export const newVideoJobSchema = z.object({
     .array(z.enum(['16_9', '1_1', '9_16']))
     .min(1)
     .max(3),
+  publishTargets: z.array(z.enum(['youtube', 'tiktok', 'instagram'])).min(1),
 
   // Étape 2 (assets)
   audioPath: z.string().min(1),
@@ -59,7 +65,7 @@ export type NewVideoJobInput = z.infer<typeof newVideoJobSchema>
 export async function createVideoJob(rawInput: NewVideoJobInput) {
   // 2.1  Validation
   const input = newVideoJobSchema.parse(rawInput)
-
+  console.log(rawInput)
   // 2.2 Transaction Drizzle
   const jobId = await db.transaction(async (tx) => {
     /* (a) Vidéo « parent » */
@@ -74,16 +80,17 @@ export async function createVideoJob(rawInput: NewVideoJobInput) {
         audioPath: input.audioPath,
         imagePath: input.imagePath,
         buyLink: input.buyLink ?? null,
-        status: 'pending' satisfies (typeof videoStatus.enumValues)[number]
+        status: 'pending' satisfies (typeof videoStatus.enumValues)[number],
+        publishTargets: input.publishTargets
       })
       .returning({ id: videos.id })
 
     /* (b) Formats à rendre */
     await tx.insert(videoVariants).values(
-      input.formats.map((format) => ({
+      input.formats.map<VariantInsert>((f) => ({
         videoId,
-        format: format satisfies (typeof videoFormat.enumValues)[number],
-        status: 'pending'
+        format: f as VideoFormat,
+        status: 'pending' as VideoStatus
       }))
     )
 
@@ -122,10 +129,7 @@ export async function markVideoStatus(params: {
 
   await db.transaction(async (tx) => {
     // (1) Mise à jour de la table videos
-    await tx
-      .update(videos)
-      .set({ status })
-      .where((v) => v.id.eq(videoId))
+    await tx.update(videos).set({ status }).where(eq(videos.id, videoId))
 
     // (2) Log d'activité
     await tx.insert(activityLogs).values({

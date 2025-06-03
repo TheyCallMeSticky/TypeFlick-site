@@ -25,11 +25,13 @@ import { createVideoJob, newVideoJobSchema } from '@/lib/videos/createVideoJob'
  *   audioPath: string,
  *   imagePath: string,
  *   buyLink?: string
+ *   publishTargets : ['youtube' | 'instagram' | 'tiktok', ...]
  * }
  */
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.headers.get('x-real-ip') || req.ip || null
+    const forwarded = req.headers.get('x-forwarded-for')
+    const ip = forwarded?.split(',')[0]?.trim() ?? req.headers.get('x-real-ip') // first address in the list // nginx / proxy
 
     const body = await req.json()
     // Merge IP into payload for logging

@@ -117,6 +117,7 @@ export const activityLogsRelations = relations(activityLogs, ({ one }) => ({
 
 export const videoFormat = pgEnum('video_format_enum', ['16_9', '1_1', '9_16'])
 export const videoStatus = pgEnum('video_status_enum', ['pending', 'processing', 'done', 'failed'])
+export const publishTarget = pgEnum('publish_target_enum', ['youtube', 'tiktok', 'instagram'])
 
 export const templates = pgTable('templates', {
   id: serial('id').primaryKey(),
@@ -146,6 +147,7 @@ export const videos = pgTable('videos', {
   seoDescription: text('seo_description'),
   seoHashtags: text('seo_hashtags').array().$type<'text'>(),
   status: videoStatus('status').default('pending'),
+  publishTargets: publishTarget('publish_targets').array().notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow()
 })
