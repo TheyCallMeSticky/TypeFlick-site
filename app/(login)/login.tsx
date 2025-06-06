@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useActionState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { PlainInput } from '@/components/ui/plain-input'
 import { Label } from '@/components/ui/label'
 import { Loader2 } from 'lucide-react'
 import { signIn, signUp } from './actions'
@@ -42,7 +42,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               Email
             </Label>
             <div className="mt-1">
-              <Input
+              <PlainInput
                 id="email"
                 name="email"
                 type="email"
@@ -61,7 +61,7 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               Password
             </Label>
             <div className="mt-1">
-              <Input
+              <PlainInput
                 id="password"
                 name="password"
                 type="password"

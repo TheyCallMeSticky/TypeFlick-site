@@ -10,7 +10,7 @@ type InputProps = React.ComponentProps<'input'> & {
  * If value is undefined/null we don't pass it → keeps the input uncontrolled.
  * For non-file inputs we fall back to empty string, so it's always controlled.
  */
-function Input({ className, type, label, error, value, ...rest }: InputProps) {
+function ControlledInput({ className, type, label, error, value, ...rest }: InputProps) {
   const isFile = type === 'file'
 
   return (
@@ -39,4 +39,4 @@ function Input({ className, type, label, error, value, ...rest }: InputProps) {
   )
 }
 
-export { Input }
+export { ControlledInput }

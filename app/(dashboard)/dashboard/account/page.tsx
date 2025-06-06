@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { PlainInput } from '@/components/ui/plain-input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Lock, Trash2, Loader2 } from 'lucide-react'
@@ -38,7 +38,7 @@ function AccountForm({ state, nameValue = '', emailValue = '' }: AccountFormProp
         <Label htmlFor="name" className="mb-2">
           Name
         </Label>
-        <Input
+        <PlainInput
           id="name"
           name="name"
           placeholder="Enter your name"
@@ -50,7 +50,7 @@ function AccountForm({ state, nameValue = '', emailValue = '' }: AccountFormProp
         <Label htmlFor="email" className="mb-2">
           Email
         </Label>
-        <Input
+        <PlainInput
           id="email"
           name="email"
           type="email"
@@ -125,7 +125,7 @@ export default function AccountPage() {
               <Label htmlFor="current-password" className="mb-2">
                 Current Password
               </Label>
-              <Input
+              <PlainInput
                 id="current-password"
                 name="currentPassword"
                 type="password"
@@ -140,7 +140,7 @@ export default function AccountPage() {
               <Label htmlFor="new-password" className="mb-2">
                 New Password
               </Label>
-              <Input
+              <PlainInput
                 id="new-password"
                 name="newPassword"
                 type="password"
@@ -155,7 +155,7 @@ export default function AccountPage() {
               <Label htmlFor="confirm-password" className="mb-2">
                 Confirm New Password
               </Label>
-              <Input
+              <PlainInput
                 id="confirm-password"
                 name="confirmPassword"
                 type="password"
@@ -203,7 +203,7 @@ export default function AccountPage() {
               <Label htmlFor="delete-password" className="mb-2">
                 Confirm Password
               </Label>
-              <Input
+              <PlainInput
                 id="delete-password"
                 name="password"
                 type="password"

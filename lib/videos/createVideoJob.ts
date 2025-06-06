@@ -65,7 +65,6 @@ export type NewVideoJobInput = z.infer<typeof newVideoJobSchema>
 export async function createVideoJob(rawInput: NewVideoJobInput) {
   // 2.1  Validation
   const input = newVideoJobSchema.parse(rawInput)
-  console.log(rawInput)
   // 2.2 Transaction Drizzle
   const jobId = await db.transaction(async (tx) => {
     /* (a) Vidéo « parent » */

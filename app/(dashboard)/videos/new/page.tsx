@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { ControlledInput } from '@/components/ui/controlled-input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Loader2, Check, XCircle } from 'lucide-react'
 import Image from 'next/image'
@@ -225,14 +225,18 @@ function StepInfo({ control, errors }: any) {
           control={control}
           name="primaryBeatmaker"
           render={({ field }) => (
-            <Input label="Main beatmaker" {...field} error={errors.primaryBeatmaker?.message} />
+            <ControlledInput
+              label="Main beatmaker"
+              {...field}
+              error={errors.primaryBeatmaker?.message}
+            />
           )}
         />
         <Controller
           control={control}
           name="collaborators"
           render={({ field }) => (
-            <Input
+            <ControlledInput
               label="Additional beatmakers (comma‑separated)"
               {...field}
               error={errors.collaborators?.message}
@@ -243,21 +247,25 @@ function StepInfo({ control, errors }: any) {
           control={control}
           name="beatName"
           render={({ field }) => (
-            <Input label="Beat name" {...field} error={errors.beatName?.message} />
+            <ControlledInput label="Beat name" {...field} error={errors.beatName?.message} />
           )}
         />
         <Controller
           control={control}
           name="typeBeat"
           render={({ field }) => (
-            <Input label="Type beat (e.g. 21 Savage)" {...field} error={errors.typeBeat?.message} />
+            <ControlledInput
+              label="Type beat (e.g. 21 Savage)"
+              {...field}
+              error={errors.typeBeat?.message}
+            />
           )}
         />
         <Controller
           control={control}
           name="buyLink"
           render={({ field }) => (
-            <Input label="Purchase link" {...field} error={errors.buyLink?.message} />
+            <ControlledInput label="Purchase link" {...field} error={errors.buyLink?.message} />
           )}
         />
       </CardContent>
@@ -278,7 +286,7 @@ function StepAssets({ control, errors }: any) {
           control={control}
           name="audioFile"
           render={({ field: { onChange, onBlur, name, ref } }) => (
-            <Input
+            <ControlledInput
               type="file"
               accept="audio/*"
               label="Audio file"
@@ -297,7 +305,7 @@ function StepAssets({ control, errors }: any) {
           control={control}
           name="imageFile"
           render={({ field: { onChange, onBlur, name, ref } }) => (
-            <Input
+            <ControlledInput
               type="file"
               accept="image/*"
               label="Cover image"

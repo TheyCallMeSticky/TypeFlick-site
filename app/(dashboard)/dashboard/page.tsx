@@ -9,7 +9,7 @@ import { TeamDataWithMembers, User } from '@/lib/db/schema'
 import { removeTeamMember, inviteTeamMember } from '@/app/(login)/actions'
 import useSWR from 'swr'
 import { Suspense } from 'react'
-import { Input } from '@/components/ui/input'
+import { PlainInput } from '@/components/ui/plain-input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Loader2, PlusCircle } from 'lucide-react'
@@ -191,7 +191,7 @@ function InviteTeamMember() {
             <Label htmlFor="email" className="mb-2">
               Email
             </Label>
-            <Input
+            <PlainInput
               id="email"
               name="email"
               type="email"
