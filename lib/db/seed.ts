@@ -16,8 +16,7 @@ async function createStripeProducts() {
     unit_amount: 800, // $8 in cents
     currency: 'usd',
     recurring: {
-      interval: 'month',
-      trial_period_days: 7
+      interval: 'month'
     }
   })
 

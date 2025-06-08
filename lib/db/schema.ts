@@ -158,6 +158,7 @@ export const videoVariants = pgTable('video_variants', {
     .notNull()
     .references(() => videos.id),
   format: videoFormat('format').notNull(),
+  jobUuid: varchar('job_uuid', { length: 36 }), // NEW ← RQ UUID
   outputPath: text('output_path'),
   status: videoStatus('status').default('pending'),
   durationMs: integer('duration_ms'),

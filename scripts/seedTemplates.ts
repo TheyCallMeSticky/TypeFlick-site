@@ -1,4 +1,6 @@
 // scripts/seedTemplates.ts
+import 'dotenv/config'
+
 import { db } from '@/lib/db'
 import { templates } from '@/lib/db/schema'
 ;(async () => {
@@ -8,7 +10,7 @@ import { templates } from '@/lib/db/schema'
       {
         id: 1, // keep fixed IDs
         name: 'Water-marked free',
-        slug: 'water-marked-free',
+        slug: 'free',
         aspectRatio: '16_9',
         thumbnailUrl: '/thumb/free.png',
         config: {}
@@ -16,7 +18,7 @@ import { templates } from '@/lib/db/schema'
       {
         id: 2,
         name: 'Classic Type Beat',
-        slug: 'classic-type-beat',
+        slug: 'base',
         aspectRatio: '16_9',
         thumbnailUrl: '/thumb/classic.png',
         config: {}

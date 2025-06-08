@@ -1,15 +1,4 @@
-/* ------------------------------------------------------------------
-   createVideoJob.ts  –  Service d'insertion & suivi « job vidéo »
-   ------------------------------------------------------------------
-   • Valide le payload entrant (zod)
-   • Ouvre une transaction Drizzle
-       1) INSERT dans videos
-       2) INSERT N x video_variants
-       3) INSERT N x video_collaborators (facultatif)
-       4) INSERT ligne activity_logs (CREATE_VIDEO)
-   • Exporte aussi un helper pour marquer VIDEO_DONE / VIDEO_FAILED
--------------------------------------------------------------------*/
-
+import path from 'node:path'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import {
@@ -17,31 +6,39 @@ import {
   videoVariants,
   videoCollaborators,
   activityLogs,
-  videoFormat,
+  templates,
   videoStatus
 } from '@/lib/db/schema'
-import { InferInsertModel, eq } from 'drizzle-orm' // au tout début
+import { eq, InferInsertModel } from 'drizzle-orm'
+import { enqueuePythonJob } from './enqueuePythonJob'
+import type { VideoFormat } from '@/lib/db/types' // alias = typeof videoFormat.enumValues[number]
 
+/* ------------------------------------------------------------------ */
+/* Types helpers                                                      */
+/* ------------------------------------------------------------------ */
 type VariantInsert = InferInsertModel<typeof videoVariants>
-type VideoFormat = (typeof videoFormat.enumValues)[number]
 type VideoStatus = (typeof videoStatus.enumValues)[number]
 
-/* ------------------------------------------------------------------
-   1. Schéma d'entrée (création de job)
--------------------------------------------------------------------*/
+/* ------------------------------------------------------------------ */
+/* Validation schema                                                  */
+/* ------------------------------------------------------------------ */
 export const newVideoJobSchema = z.object({
-  // Contexte
+  /* contexte */
   userId: z.number().int().positive(),
   teamId: z.number().int().positive(),
   ipAddress: z.string().optional(),
 
-  // Étape 1 (infos texte)
+  /* step 1 – text info */
   primaryBeatmaker: z.string().min(1),
   collaborators: z.array(z.string().min(1)).optional(),
   beatName: z.string().min(1),
   typeBeat: z.string().min(1),
 
-  // Étape 3 (template + formats)
+  /* step 2 – assets */
+  audioPath: z.string().min(1),
+  imagePath: z.string().min(1),
+
+  /* step 3 – template & formats */
   templateId: z.number().int().positive(),
   formats: z
     .array(z.enum(['16_9', '1_1', '9_16']))
@@ -49,25 +46,21 @@ export const newVideoJobSchema = z.object({
     .max(3),
   publishTargets: z.array(z.enum(['youtube', 'tiktok', 'instagram'])).min(1),
 
-  // Étape 2 (assets)
-  audioPath: z.string().min(1),
-  imagePath: z.string().min(1),
-
-  // Étape 4 (optionnel)
+  /* step 4 – optional */
   buyLink: z.string().url().optional()
 })
-
 export type NewVideoJobInput = z.infer<typeof newVideoJobSchema>
 
-/* ------------------------------------------------------------------
-   2. Fonction de création
--------------------------------------------------------------------*/
+/* ------------------------------------------------------------------ */
+/* Main function                                                      */
+/* ------------------------------------------------------------------ */
 export async function createVideoJob(rawInput: NewVideoJobInput) {
-  // 2.1  Validation
+  /* 1. Validate ----------------------------------------------------- */
   const input = newVideoJobSchema.parse(rawInput)
-  // 2.2 Transaction Drizzle
-  const jobId = await db.transaction(async (tx) => {
-    /* (a) Vidéo « parent » */
+
+  /* 2. Insert everything in one short transaction ------------------ */
+  const { videoId, templateSlug, variants } = await db.transaction(async (tx) => {
+    /* (a) parent video ------------------------------------------- */
     const [{ id: videoId }] = await tx
       .insert(videos)
       .values({
@@ -79,28 +72,30 @@ export async function createVideoJob(rawInput: NewVideoJobInput) {
         audioPath: input.audioPath,
         imagePath: input.imagePath,
         buyLink: input.buyLink ?? null,
-        status: 'pending' satisfies (typeof videoStatus.enumValues)[number],
+        status: 'pending' satisfies VideoStatus,
         publishTargets: input.publishTargets
       })
       .returning({ id: videos.id })
 
-    /* (b) Formats à rendre */
-    await tx.insert(videoVariants).values(
-      input.formats.map<VariantInsert>((f) => ({
-        videoId,
-        format: f as VideoFormat,
-        status: 'pending' as VideoStatus
-      }))
-    )
+    /* (b) variants ----------------------------------------------- */
+    const variants: VariantInsert[] = input.formats.map((f) => ({
+      videoId,
+      format: f as VideoFormat,
+      status: 'pending' as VideoStatus
+    }))
+    const inserted = await tx
+      .insert(videoVariants)
+      .values(variants)
+      .returning({ id: videoVariants.id, format: videoVariants.format })
 
-    /* (c) Collaborateurs éventuels */
+    /* (c) collaborators ------------------------------------------ */
     if (input.collaborators?.length) {
       await tx
         .insert(videoCollaborators)
         .values(input.collaborators.map((name) => ({ videoId, name })))
     }
 
-    /* (d) Log d'activité (CREATE_VIDEO) */
+    /* (d) activity log ------------------------------------------- */
     await tx.insert(activityLogs).values({
       teamId: input.teamId,
       userId: input.userId,
@@ -108,15 +103,44 @@ export async function createVideoJob(rawInput: NewVideoJobInput) {
       ipAddress: input.ipAddress ?? null
     })
 
-    return videoId
-  })
+    /* (e) template slug ------------------------------------------ */
+    const tpl = await tx.query.templates.findFirst({
+      columns: { slug: true },
+      where: eq(templates.id, input.templateId)
+    })
+    if (!tpl) throw new Error('Template not found')
 
-  return { jobId }
+    return { videoId, templateSlug: tpl.slug, variants: inserted }
+  }) // ↩︎ transaction ends here — data is committed
+
+  /* 3. Queue Python jobs ------------------------------------------- */
+  await Promise.all(
+    variants.map((v) =>
+      enqueuePythonJob({
+        variantId: v.id,
+        format: v.format as VideoFormat,
+        templateSlug,
+        audioFilename: path.basename(input.audioPath),
+        imageFilename: path.basename(input.imagePath),
+        maxDurationSec: 60,
+        beatInfo: {
+          primary_beatmaker: input.primaryBeatmaker,
+          beat_name: input.beatName,
+          type_beat_name: input.typeBeat,
+          producer_name: input.primaryBeatmaker,
+          colab: input.collaborators?.join(',') ?? ''
+        }
+      })
+    )
+  )
+
+  /* 4. Return ------------------------------------------------------ */
+  return { jobId: videoId }
 }
 
-/* ------------------------------------------------------------------
-   3. Helper de statut final (à appeler depuis le worker)
--------------------------------------------------------------------*/
+/* ------------------------------------------------------------------ */
+/* Helper called by the worker to close the job --------------------- */
+/* ------------------------------------------------------------------ */
 export async function markVideoStatus(params: {
   videoId: number
   teamId: number
@@ -127,10 +151,7 @@ export async function markVideoStatus(params: {
   const { videoId, teamId, status, userId = null, ipAddress = null } = params
 
   await db.transaction(async (tx) => {
-    // (1) Mise à jour de la table videos
     await tx.update(videos).set({ status }).where(eq(videos.id, videoId))
-
-    // (2) Log d'activité
     await tx.insert(activityLogs).values({
       teamId,
       userId,

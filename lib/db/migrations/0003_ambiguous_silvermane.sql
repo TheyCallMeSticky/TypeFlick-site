@@ -1,0 +1,1 @@
+ALTER TABLE "video_variants" ADD COLUMN "job_uuid" varchar(36);

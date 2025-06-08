@@ -22,6 +22,13 @@
       "when": 1748895302882,
       "tag": "0002_wide_oracle",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1749398199506,
+      "tag": "0003_ambiguous_silvermane",
+      "breakpoints": true
     }
   ]
 }

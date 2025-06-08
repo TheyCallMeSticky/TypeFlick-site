@@ -131,8 +131,8 @@ export default function VideoWizard() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: userWithTeam.user.id, // TODO: replace with session user
-          teamId: userWithTeam.teamId, // TODO: replace with team context
+          userId: userWithTeam.user.id,
+          teamId: userWithTeam.teamId,
           primaryBeatmaker: data.primaryBeatmaker,
           collaborators: data.collaborators
             ?.split(',')
@@ -584,8 +584,15 @@ export function StepReview({ watch }: any) {
    Utils — upload stub (to be replaced by S3 / B2 presigned later)
 -------------------------------------------------------------------*/
 
-async function uploadFile(file: File, type: 'audio' | 'image') {
-  // TODO: implement presigned upload; for now just return placeholder URL
-  const blobUrl = URL.createObjectURL(file)
-  return blobUrl
+async function uploadFile(file: File, kind: 'audio' | 'image') {
+  const fd = new FormData()
+  fd.append('file', file)
+  fd.append('type', kind)
+
+  const res = await fetch('/api/upload', { method: 'POST', body: fd })
+  if (!res.ok) throw new Error('Upload failed')
+
+  const { filename } = (await res.json()) as { filename: string }
+  console.log(filename)
+  return filename
 }
