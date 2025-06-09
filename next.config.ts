@@ -10,10 +10,20 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/files/videos/:path*',
-        destination: `http://python-api:8000/files/videos/:path*`
-        // ou si Next.js doit servir lui-même, tu montes ./typeflick-core/files/videos
-        // en tant que dossier public de Next, mais ici on reverse-proxy vers Python API
+        source: '/files/:folder/:path*',
+        destination: 'http://python-api:8000/files/:folder/:path*'
+      }
+    ]
+  },
+
+  // ②  autoriser les images “distantes” du conteneur python-api
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'python-api',
+        port: '8000',
+        pathname: '/files/images/**'
       }
     ]
   }

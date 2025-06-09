@@ -156,7 +156,7 @@ export const videoVariants = pgTable('video_variants', {
   id: serial('id').primaryKey(),
   videoId: integer('video_id')
     .notNull()
-    .references(() => videos.id),
+    .references(() => videos.id, { onDelete: 'cascade' }),
   format: videoFormat('format').notNull(),
   jobUuid: varchar('job_uuid', { length: 36 }), // NEW ← RQ UUID
   outputPath: text('output_path'),
@@ -173,7 +173,7 @@ export const videoCollaborators = pgTable(
   {
     videoId: integer('video_id')
       .notNull()
-      .references(() => videos.id),
+      .references(() => videos.id, { onDelete: 'cascade' }),
     name: varchar('name', { length: 120 }).notNull()
   },
   (table) => [primaryKey({ columns: [table.videoId, table.name] })]
