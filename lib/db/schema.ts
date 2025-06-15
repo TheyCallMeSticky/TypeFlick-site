@@ -10,6 +10,7 @@ import {
   primaryKey
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
+import { SUBRESOURCE_INTEGRITY_MANIFEST } from 'next/dist/shared/lib/constants'
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -158,9 +159,10 @@ export const videoVariants = pgTable('video_variants', {
     .notNull()
     .references(() => videos.id, { onDelete: 'cascade' }),
   format: videoFormat('format').notNull(),
-  jobUuid: varchar('job_uuid', { length: 36 }), // NEW ← RQ UUID
+  jobUuid: varchar('job_uuid', { length: 36 }), 
   outputPath: text('output_path'),
   status: videoStatus('status').default('pending'),
+  progress : integer('progress'),
   durationMs: integer('duration_ms'),
   width: integer('width'),
   height: integer('height'),

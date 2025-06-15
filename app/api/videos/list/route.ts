@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { videos, videoVariants } from '@/lib/db/schema'
 import { desc, eq, sql } from 'drizzle-orm'
 import { getSession } from '@/lib/auth/session'
+import { syncPendingVariants } from '@/lib/videos/syncPendingVariants'
 
 /* util ──────────────────────────────────────── */
 function pgArrayToJs(value: unknown): string[] {
@@ -33,6 +34,9 @@ export async function GET(req: NextRequest) {
   }
 
   const userId = session.user.id
+
+  // ← NOUVEAU : mise à jour silencieuse
+  await syncPendingVariants(userId)
 
   const raw = await db
     .select({

@@ -20,9 +20,9 @@ type Row = {
 }
 
 export default function VideoTable() {
-  const { data, error, isLoading } = useSWR<Row[]>('/api/videos/list?offset=0&limit=50', fetcher, {
-    refreshInterval: 5000
-  })
+  const { data, error, isLoading } = useSWR<Row[]>('/api/videos/list?offset=0&limit=50', fetcher
+    , {refreshInterval: 5000}
+)
 
   /* petit lecteur audio ---------------------------------------------------------------- */
   const [current, setCurrent] = useState<number | null>(null)

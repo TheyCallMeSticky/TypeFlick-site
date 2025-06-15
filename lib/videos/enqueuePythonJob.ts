@@ -1,24 +1,26 @@
 // lib/videos/enqueuePythonJob.ts
+import { db } from '@/lib/db'
+import { videoVariants } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 
-import type { VideoFormat } from '@/lib/db/types'
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://python-api:8000'
 
 export async function enqueuePythonJob(opts: {
-  variantId: number // DB id of video_variants row
-  format: VideoFormat // '16_9' | '1_1' | '9_16'
-  templateSlug: string // e.g. 'vinyl'
-  audioFilename: string // foo.mp3  (already copied to shared volume)
-  imageFilename: string // bar.jpg
-  maxDurationSec: number // e.g. 60
+  variantId: number
+  format: '16_9' | '1_1' | '9_16'
+  templateSlug: string
+  audioFilename: string
+  imageFilename: string
+  maxDurationSec: number
   beatInfo: {
     primary_beatmaker: string
     beat_name: string
     type_beat_name: string
     producer_name: string
-    colab: string
+    colab?: string | null
   }
 }) {
+  /* 1. POST /generate --------------------------------------------------- */
   const res = await fetch(`${API_URL}/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -31,7 +33,14 @@ export async function enqueuePythonJob(opts: {
       max_duration: opts.maxDurationSec
     })
   })
-
   if (!res.ok) throw new Error(await res.text())
-  return (await res.json()) as { job_id: string }
+  const { job_id } = (await res.json()) as { job_id: string }
+
+  /* 2. Màj video_variants ----------------------------------------------- */
+  await db
+    .update(videoVariants)
+    .set({ jobUuid: job_id })          // ← on garde la liaison DB ↔ Redis
+    .where(eq(videoVariants.id, opts.variantId))
+
+  return { jobUuid: job_id }
 }
