@@ -1,1 +1,0 @@
-ALTER TABLE "video_variants" ADD COLUMN "progress" integer;

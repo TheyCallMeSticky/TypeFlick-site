@@ -38,7 +38,7 @@ const formSchema = z.object({
   templateId: z.number().int(),
   formats: z.array(z.enum(['16_9', '1_1', '9_16'])).min(1),
   publishTargets: z
-    .array(z.enum(['youtube', 'tiktok', 'instagram']))
+    .array(z.enum(['youtube', 'tiktok', 'instagram', 'x']))
     .min(1, 'Pick at least one platform'),
   // optional
   buyLink: z
@@ -68,7 +68,8 @@ interface Template {
 const allPlatforms = [
   { id: 'youtube', label: 'YouTube' },
   { id: 'tiktok', label: 'TikTok' },
-  { id: 'instagram', label: 'Instagram' }
+  { id: 'instagram', label: 'Instagram' },
+  { id: 'x', label: 'x' }
 ]
 /* ------------------------------------------------------------------
    3. Wizard component
@@ -391,7 +392,8 @@ export function StepTemplateFormat({ control, errors, watch, setValue }: any) {
   const platformFormats: Record<string, string[]> = {
     youtube: ['16_9'],
     instagram: ['1_1', '9_16'],
-    tiktok: ['9_16']
+    tiktok: ['9_16'],
+    x: ['16_9']
   }
 
   // If templates are still loading or errored, show a placeholder
@@ -505,7 +507,7 @@ export function StepTemplateFormat({ control, errors, watch, setValue }: any) {
             Publish to: <Req />
           </p>
           <div className="flex flex-wrap gap-4">
-            {['youtube', 'instagram', 'tiktok'].map((p) => (
+            {['youtube', 'instagram', 'tiktok', 'x'].map((p) => (
               <label key={p} className="flex items-center gap-2">
                 <Checkbox
                   checked={selectedTargets.includes(p)}

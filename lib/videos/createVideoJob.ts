@@ -9,7 +9,7 @@ import {
   templates,
   videoStatus,
   videoMetadata,
-  seoPlatform
+  publishTarget
 } from '@/lib/db/schema'
 import { eq, InferInsertModel } from 'drizzle-orm'
 import { enqueuePythonJob } from './enqueuePythonJob'
@@ -25,7 +25,7 @@ type VideoStatus = (typeof videoStatus.enumValues)[number]
 /* ------------------------------------------------------------------ */
 /* Helpers pour la table video_metadata                               */
 /* ------------------------------------------------------------------ */
-type SeoPlatform = (typeof seoPlatform.enumValues)[number]
+type publishTarget = (typeof publishTarget.enumValues)[number]
 
 /* ------------------------------------------------------------------ */
 /* Validation schema                                                  */
@@ -52,7 +52,7 @@ export const newVideoJobSchema = z.object({
     .array(z.enum(['16_9', '1_1', '9_16']))
     .min(1)
     .max(3),
-  publishTargets: z.array(z.enum(['youtube', 'tiktok', 'instagram'])).min(1),
+  publishTargets: z.array(z.enum(['youtube', 'tiktok', 'instagram', 'x'])).min(1),
 
   /* step 4 – optional */
   buyLink: z.string().url().optional()

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import ProgressBar from '@/components/ui/ProgressBar'
@@ -14,48 +14,70 @@ type Variant = {
   outputPath: string | null
 }
 
+type Platform = 'youtube' | 'instagram' | 'tiktok' | 'x'
+
 type Video = {
   id: number
   beatName: string
   status: 'pending' | 'processing' | 'done' | 'failed'
-  seoTitle: string | null
-  seoDescription: string | null
-  seoHashtags: string[] | null
-  publishTargets: ('youtube' | 'tiktok' | 'instagram')[]
+  publishTargets: Platform[]
+}
+
+type Metadata = {
+  platform: Platform
+  title: string
+  description: string
+  hashtags: string[]
 }
 
 export default function VideoDetailClient({
   video,
-  variants
+  variants,
+  metadata
 }: {
   video: Video
   variants: Variant[]
+  metadata: Metadata[]
 }) {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
+  const initial = (metadata[0]?.platform ?? video.publishTargets[0] ?? 'youtube') as Platform
+  const [active, setActive] = useState<Platform>(initial)
+  const meta = metadata.find((m) => m.platform === active)
 
   /* ────────── React-Hook-Form setup */
   const {
     register,
     handleSubmit,
-    formState: { isDirty }
-  } = useForm({
+    formState: { isDirty },
+    reset
+  } = useForm<{ title: string; description: string; hashtags: string }>({
     defaultValues: {
-      title: video.seoTitle ?? '',
-      description: video.seoDescription ?? '',
-      hashtags: (video.seoHashtags ?? []).join(' ')
+      title: meta?.title ?? '',
+      description: meta?.description ?? '',
+      hashtags: (meta?.hashtags ?? []).join(' ')
     }
   })
 
+  useEffect(() => {
+    const m = metadata.find((x) => x.platform === active)
+    reset({
+      title: m?.title ?? '',
+      description: m?.description ?? '',
+      hashtags: (m?.hashtags ?? []).join(' ')
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active])
+
   const onSubmit = async (data: any) => {
     setSaving(true)
-    const res = await fetch(`/api/videos/${video.id}/metadata`, {
+    const res = await fetch(`/api/videos/${video.id}/metadata/${active}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        seoTitle: data.title,
-        seoDescription: data.description,
-        seoHashtags: data.hashtags.split(/\s+/).filter(Boolean)
+        title: data.title.trim(),
+        description: data.description.trim(),
+        hashtags: data.hashtags.split(/\s+/).filter(Boolean)
       })
     })
     setSaving(false)
@@ -95,7 +117,20 @@ export default function VideoDetailClient({
       {/* 2. Metadata */}
       <section>
         <h2 className="font-semibold mb-3">Video metadata</h2>
-
+        <div className="flex gap-2 mb-4">
+          {[...new Set([...video.publishTargets, ...metadata.map((m) => m.platform)])].map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setActive(p)}
+              className={`px-3 py-1 rounded text-sm ${
+                active === p ? 'bg-primary text-white' : 'bg-muted-foreground/20'
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-xl">
           <div>
             <label className="block text-sm mb-1">Title</label>

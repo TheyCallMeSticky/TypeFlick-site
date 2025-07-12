@@ -25,7 +25,7 @@ import { createVideoJob, newVideoJobSchema } from '@/lib/videos/createVideoJob'
  *   audioPath: string,
  *   imagePath: string,
  *   buyLink?: string
- *   publishTargets : ['youtube' | 'instagram' | 'tiktok', ...]
+ *   publishTargets : ['youtube' | 'instagram' | 'tiktok' | 'x', ...]
  * }
  */
 export async function POST(req: NextRequest) {

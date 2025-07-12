@@ -1,14 +1,14 @@
-import { seoPlatform, videoMetadata } from '@/lib/db/schema'
+import { publishTarget, videoMetadata } from '@/lib/db/schema'
 import type { InferInsertModel } from 'drizzle-orm'
 
-type Platform = (typeof seoPlatform.enumValues)[number]
+type Platform = (typeof publishTarget.enumValues)[number]
 export type ApiMetaResult = Record<
   string,
   { title: string; description: string; hashtags: string[] }
 >
 
 function isPlatform(p: string): p is Platform {
-  return (seoPlatform.enumValues as readonly string[]).includes(p)
+  return (publishTarget.enumValues as readonly string[]).includes(p)
 }
 
 type MetaInsert = InferInsertModel<typeof videoMetadata>

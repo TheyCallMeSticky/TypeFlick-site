@@ -1,67 +1,22 @@
-import { stripe } from '../payments/stripe'
+import 'dotenv/config'
 import { db } from './drizzle'
-import { users, teams, teamMembers } from './schema'
+import { users, teams, teamMembers, templates } from './schema'
 import { hashPassword } from '@/lib/auth/session'
 
-async function createStripeProducts() {
-  console.log('Creating Stripe products and prices...')
-
-  const baseProduct = await stripe.products.create({
-    name: 'Base',
-    description: 'Base subscription plan'
-  })
-
-  await stripe.prices.create({
-    product: baseProduct.id,
-    unit_amount: 800, // $8 in cents
-    currency: 'usd',
-    recurring: {
-      interval: 'month'
-    }
-  })
-
-  const plusProduct = await stripe.products.create({
-    name: 'Plus',
-    description: 'Plus subscription plan'
-  })
-
-  await stripe.prices.create({
-    product: plusProduct.id,
-    unit_amount: 1200, // $12 in cents
-    currency: 'usd',
-    recurring: {
-      interval: 'month',
-      trial_period_days: 7
-    }
-  })
-
-  console.log('Stripe products and prices created successfully.')
-}
-
-async function seed() {
+async function createInitialUserAndTeam() {
   const email = 'test@test.com'
   const password = 'admin123'
-  const passwordHash = await hashPassword(password)
 
   const [user] = await db
     .insert(users)
-    .values([
-      {
-        email: email,
-        passwordHash: passwordHash,
-        role: 'owner'
-      }
-    ])
-    .returning()
-
-  console.log('Initial user created.')
-
-  const [team] = await db
-    .insert(teams)
     .values({
-      name: 'Test Team'
+      email,
+      passwordHash: await hashPassword(password),
+      role: 'owner'
     })
     .returning()
+
+  const [team] = await db.insert(teams).values({ name: 'Test Team' }).returning()
 
   await db.insert(teamMembers).values({
     teamId: team.id,
@@ -69,15 +24,54 @@ async function seed() {
     role: 'owner'
   })
 
-  await createStripeProducts()
+  console.log(`✅ User ${email} / ${password} created with team "${team.name}"`)
 }
 
-seed()
-  .catch((error) => {
-    console.error('Seed process failed:', error)
-    process.exit(1)
-  })
-  .finally(() => {
-    console.log('Seed process finished. Exiting...')
+async function seedTemplates() {
+  await db
+    .insert(templates)
+    .values([
+      {
+        id: 1,
+        name: 'Water-marked free',
+        slug: 'free',
+        aspectRatio: '16_9',
+        thumbnailUrl: '/thumb/free.png',
+        config: {}
+      },
+      {
+        id: 2,
+        name: 'Classic Type Beat',
+        slug: 'base',
+        aspectRatio: '16_9',
+        thumbnailUrl: '/thumb/classic.png',
+        config: {}
+      },
+      {
+        id: 3,
+        name: 'Vinyl',
+        slug: 'vinyl',
+        aspectRatio: '16_9',
+        thumbnailUrl: '/thumb/vinyl.png',
+        config: {}
+      }
+    ])
+    .onConflictDoNothing()
+
+  console.log('✅ Templates seeded')
+}
+
+async function main() {
+  await createInitialUserAndTeam()
+  await seedTemplates()
+}
+
+main()
+  .then(() => {
+    console.log('🌱 Seed finished.')
     process.exit(0)
+  })
+  .catch((err) => {
+    console.error('❌ Seed failed:', err)
+    process.exit(1)
   })

@@ -118,7 +118,7 @@ export const activityLogsRelations = relations(activityLogs, ({ one }) => ({
 
 export const videoFormat = pgEnum('video_format_enum', ['16_9', '1_1', '9_16'])
 export const videoStatus = pgEnum('video_status_enum', ['pending', 'processing', 'done', 'failed'])
-export const publishTarget = pgEnum('publish_target_enum', ['youtube', 'tiktok', 'instagram'])
+export const publishTarget = pgEnum('publish_target_enum', ['youtube', 'tiktok', 'instagram', 'x'])
 
 export const templates = pgTable('templates', {
   id: serial('id').primaryKey(),
@@ -144,9 +144,6 @@ export const videos = pgTable('videos', {
   audioPath: text('audio_path').notNull(),
   imagePath: text('image_path').notNull(),
   buyLink: text('buy_link'),
-  seoTitle: text('seo_title'),
-  seoDescription: text('seo_description'),
-  seoHashtags: text('seo_hashtags').array().$type<'text'>(),
   status: videoStatus('status').default('pending'),
   publishTargets: publishTarget('publish_targets').array().notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
@@ -181,15 +178,13 @@ export const videoCollaborators = pgTable(
   (table) => [primaryKey({ columns: [table.videoId, table.name] })]
 )
 
-export const seoPlatform = pgEnum('seo_platform_enum', ['youtube', 'instagram', 'tiktok', 'x'])
-
 export const videoMetadata = pgTable(
   'video_metadata',
   {
     videoId: integer('video_id')
       .notNull()
       .references(() => videos.id, { onDelete: 'cascade' }),
-    platform: seoPlatform('platform').notNull(),
+    platform: publishTarget('platform').notNull(),
     title: text('title').notNull(),
     description: text('description').notNull(),
     hashtags: text('hashtags').array().$type<string[]>()

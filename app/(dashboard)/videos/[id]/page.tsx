@@ -1,8 +1,16 @@
 import { db } from '@/lib/db'
-import { videos, videoVariants } from '@/lib/db/schema'
+import { videos, videoVariants, videoMetadata } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import VideoDetailClient from './VideoDetailClient'
 
+/** Métadonnées d’une plateforme */
+type Platform = 'youtube' | 'instagram' | 'tiktok' | 'x'
+type MetaRow = {
+  platform: Platform
+  title: string
+  description: string
+  hashtags: string[]
+}
 /* helper : force une valeur non-nulle */
 const sanitizeStatus = (
   s: 'pending' | 'processing' | 'done' | 'failed' | null
@@ -40,11 +48,18 @@ export default async function Page({ params }: { params: { id: string } }) {
     id: videoRow.id,
     beatName: videoRow.beatName,
     status: sanitizeStatus(videoRow.status),
-    seoTitle: videoRow.seoTitle,
-    seoDescription: videoRow.seoDescription,
-    seoHashtags: sanitizeHashtags(videoRow.seoHashtags), // ✅
-    publishTargets: (videoRow.publishTargets ?? []) as ('youtube' | 'tiktok' | 'instagram')[]
+    publishTargets: videoRow.publishTargets as ('youtube' | 'tiktok' | 'instagram' | 'x')[]
   }
+
+  /* ─────── SEO par plateforme ─────── */
+  const metaRowsRaw = await db.select().from(videoMetadata).where(eq(videoMetadata.videoId, id))
+
+  const metaRows: MetaRow[] = metaRowsRaw.map((m) => ({
+    platform: m.platform,
+    title: m.title,
+    description: m.description,
+    hashtags: m.hashtags ?? []
+  }))
 
   const variants = variantRows.map((v) => ({
     id: v.id,
@@ -56,7 +71,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   return (
     <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-      <VideoDetailClient video={video} variants={variants} />
+      <VideoDetailClient video={video} variants={variants} metadata={metaRows} />
     </div>
   )
 }
