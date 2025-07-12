@@ -39,7 +39,7 @@ export async function enqueuePythonJob(opts: {
   /* 2. Màj video_variants ----------------------------------------------- */
   await db
     .update(videoVariants)
-    .set({ jobUuid: job_id })          // ← on garde la liaison DB ↔ Redis
+    .set({ jobUuid: job_id }) // ← on garde la liaison DB ↔ Redis
     .where(eq(videoVariants.id, opts.variantId))
 
   return { jobUuid: job_id }

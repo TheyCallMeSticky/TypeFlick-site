@@ -46,7 +46,15 @@ export async function GET(req: NextRequest) {
       createdAt: videos.createdAt,
       imageFilename: videos.imagePath,
       audioFilename: videos.audioPath,
-      formats: sql<string>`array_agg(${videoVariants.format})`
+      formats: sql<string>`array_agg(${videoVariants.format})`,
+      progress: sql<number>`
+      COALESCE(
+        ROUND(
+          100.0 *
+          COUNT(*) FILTER (WHERE ${videoVariants.status} = 'done')
+          / NULLIF(COUNT(*), 0)
+        ), 0
+      )`
     })
     .from(videos)
     .leftJoin(videoVariants, eq(videos.id, videoVariants.videoId))
@@ -56,10 +64,9 @@ export async function GET(req: NextRequest) {
     .limit(limit)
     .offset(offset)
 
-  /* normalisation : formats → string[] */
   const data = raw.map((row) => ({
     ...row,
-    formats: pgArrayToJs(row.formats) // <── conversion
+    formats: pgArrayToJs(row.formats)
   }))
 
   return NextResponse.json(data)

@@ -20,9 +20,9 @@ type Row = {
 }
 
 export default function VideoTable() {
-  const { data, error, isLoading } = useSWR<Row[]>('/api/videos/list?offset=0&limit=50', fetcher
-    , {refreshInterval: 5000}
-)
+  const { data, error, isLoading } = useSWR<Row[]>('/api/videos/list?offset=0&limit=50', fetcher, {
+    refreshInterval: 5000
+  })
 
   /* petit lecteur audio ---------------------------------------------------------------- */
   const [current, setCurrent] = useState<number | null>(null)
@@ -91,7 +91,7 @@ export default function VideoTable() {
               {/* infos --------------------------------------------------------------- */}
               <td>
                 <div className="flex gap-3 py-2">
-                  <Link href={`/dashboard/videos/${row.id}`} className="font-style-bold">
+                  <Link href={`/videos/${row.id}`} className="font-style-bold">
                     {row.beatName}
                   </Link>
                 </div>
@@ -107,7 +107,7 @@ export default function VideoTable() {
               <td>
                 <div className="flex items-center gap-3 py-2 self-center align-middle justify-end">
                   {/* view details */}
-                  <Link href={`/dashboard/videos/${row.id}`}>
+                  <Link href={`/videos/${row.id}`}>
                     <EyeIcon className="w-5 h-5"></EyeIcon>
                   </Link>
 

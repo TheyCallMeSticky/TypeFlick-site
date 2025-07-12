@@ -5,7 +5,7 @@ import { inArray } from 'drizzle-orm'
 
 const PY_API = process.env.NEXT_PUBLIC_API_URL ?? 'http://python-api:8000'
 type PyOkStatus = 'pending' | 'processing' | 'done'
-type DbStatus   = PyOkStatus | 'failed'
+type DbStatus = PyOkStatus | 'failed'
 
 /* fetch avec timeout ---------------------------------------------------- */
 async function safeFetchStatus(jobUuid: string) {
@@ -32,9 +32,9 @@ export async function syncPendingVariants(userId: number) {
   /* 1. variants à mettre à jour (jobUuid non NULL) ---------------------- */
   const variants = await db
     .select({
-      id:       videoVariants.id,
-      videoId:  videoVariants.videoId,
-      jobUuid:  videoVariants.jobUuid
+      id: videoVariants.id,
+      videoId: videoVariants.videoId,
+      jobUuid: videoVariants.jobUuid
     })
     .from(videoVariants)
     .innerJoin(videos, eq(videos.id, videoVariants.videoId))
@@ -50,25 +50,23 @@ export async function syncPendingVariants(userId: number) {
   if (!variants.length) return
 
   /* 2. appels API Python en parallèle ----------------------------------- */
-  const apiResults = await Promise.all(
-    variants.map((v) => safeFetchStatus(v.jobUuid!))
-  )
+  const apiResults = await Promise.all(variants.map((v) => safeFetchStatus(v.jobUuid!)))
 
   /* 3. transaction maj -------------------------------------------------- */
   await db.transaction(async (tx) => {
     const touched = new Set<number>()
 
     for (let i = 0; i < variants.length; i++) {
-      const variant   = variants[i]
-      const api       = apiResults[i]
-      const dbStatus  = mapStatus(api?.status)
-      const progress  = api?.progress ?? 0
-      const outPath   = api?.output_path ?? null
+      const variant = variants[i]
+      const api = apiResults[i]
+      const dbStatus = mapStatus(api?.status)
+      const progress = api?.progress ?? 0
+      const outPath = api?.output_path ?? null
 
       await tx
         .update(videoVariants)
         .set({
-          status:    dbStatus,
+          status: dbStatus,
           progress,
           outputPath: outPath,
           updatedAt: sql`NOW()`
@@ -79,9 +77,9 @@ export async function syncPendingVariants(userId: number) {
     }
 
     /* 4. recalcule le statut global des vidéos touchées ----------------- */
-  if (touched.size) {
-    for (const videoId of touched) {
-      await tx.execute(sql`
+    if (touched.size) {
+      for (const videoId of touched) {
+        await tx.execute(sql`
         UPDATE videos
           SET status = (
                 CASE
@@ -103,7 +101,7 @@ export async function syncPendingVariants(userId: number) {
               updated_at = NOW()
         WHERE id = ${videoId}
       `)
-    }
+      }
     }
   })
 }

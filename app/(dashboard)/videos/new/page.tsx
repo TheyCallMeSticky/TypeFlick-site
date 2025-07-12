@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ControlledInput } from '@/components/ui/controlled-input'
@@ -14,6 +15,11 @@ import useSWR from 'swr'
 import { User } from '@/lib/db/schema'
 import { getUwT } from './actions'
 
+const Req = () => (
+  <span aria-hidden className="text-red-600">
+    *
+  </span>
+)
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 /* ------------------------------------------------------------------
    1. Zod schema (client side)
@@ -72,7 +78,7 @@ export default function VideoWizard() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<boolean>(false)
+  const [success, setSuccess] = useState<number | null>(null)
 
   const { data: user, isLoading: userLoading, error: userErr } = useSWR<User>('/api/user', fetcher)
 
@@ -149,7 +155,8 @@ export default function VideoWizard() {
         })
       })
       if (!res.ok) throw new Error(await res.text())
-      setSuccess(true)
+      const { id: newVideoId } = (await res.json()) as { id: number } // ◄ read id
+      setSuccess(newVideoId)
     } catch (e: any) {
       setError(e.message)
     } finally {
@@ -162,10 +169,23 @@ export default function VideoWizard() {
     <div className="max-w-3xl mx-auto py-10 space-y-6">
       <h1 className="text-3xl font-bold mb-6">Create a Video</h1>
 
-      {success ? (
-        <Card className="p-6 text-center">
-          <Check className="w-12 h-12 mx-auto mb-4" />
-          <p className="text-xl">Your video is now being generated!</p>
+      {success !== null ? (
+        <Card className="p-6 text-center space-y-6">
+          <div>
+            <Check className="w-12 h-12 mx-auto mb-4 text-success" />
+            <p className="text-xl font-medium">Your video is now being generated!</p>
+          </div>
+
+          <div className="flex justify-center gap-4">
+            <Link href="/dashboard" className="inline-block">
+              <Button variant="secondary" className="w-40">
+                Dashboard
+              </Button>
+            </Link>
+            <Link href={`/videos/${success}`} className="inline-block">
+              <Button className="w-40">View video</Button>
+            </Link>
+          </div>
         </Card>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -226,7 +246,11 @@ function StepInfo({ control, errors }: any) {
           name="primaryBeatmaker"
           render={({ field }) => (
             <ControlledInput
-              label="Main beatmaker"
+              label={
+                <>
+                  Main beatmaker <Req />
+                </>
+              }
               {...field}
               error={errors.primaryBeatmaker?.message}
             />
@@ -247,7 +271,15 @@ function StepInfo({ control, errors }: any) {
           control={control}
           name="beatName"
           render={({ field }) => (
-            <ControlledInput label="Beat name" {...field} error={errors.beatName?.message} />
+            <ControlledInput
+              label={
+                <>
+                  Beat name <Req />
+                </>
+              }
+              {...field}
+              error={errors.beatName?.message}
+            />
           )}
         />
         <Controller
@@ -255,7 +287,11 @@ function StepInfo({ control, errors }: any) {
           name="typeBeat"
           render={({ field }) => (
             <ControlledInput
-              label="Type beat (e.g. 21 Savage)"
+              label={
+                <>
+                  Type beat (e.g. 21 Savage) <Req />
+                </>
+              }
               {...field}
               error={errors.typeBeat?.message}
             />
@@ -289,7 +325,11 @@ function StepAssets({ control, errors }: any) {
             <ControlledInput
               type="file"
               accept="audio/*"
-              label="Audio file"
+              label={
+                <>
+                  Audio file <Req />
+                </>
+              }
               name={name}
               ref={ref}
               onBlur={onBlur}
@@ -308,7 +348,11 @@ function StepAssets({ control, errors }: any) {
             <ControlledInput
               type="file"
               accept="image/*"
-              label="Cover image"
+              label={
+                <>
+                  Cover image <Req />
+                </>
+              }
               name={name}
               ref={ref}
               onBlur={onBlur}
@@ -417,7 +461,11 @@ export function StepTemplateFormat({ control, errors, watch, setValue }: any) {
 
   return (
     <Card>
-      <CardHeader>Video template, formats & platforms</CardHeader>
+      <CardHeader>
+        <div className="flex items-center gap-1">
+          Video template, formats &amp; platforms <Req />
+        </div>
+      </CardHeader>
       <CardContent className="space-y-6">
         {/* ———————— Template Thumbnails ———————— */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -453,7 +501,9 @@ export function StepTemplateFormat({ control, errors, watch, setValue }: any) {
 
         {/* ———————— Platforms Checkboxes ———————— */}
         <div>
-          <p className="font-medium mb-2">Publish to:</p>
+          <p className="font-medium mb-2">
+            Publish to: <Req />
+          </p>
           <div className="flex flex-wrap gap-4">
             {['youtube', 'instagram', 'tiktok'].map((p) => (
               <label key={p} className="flex items-center gap-2">
@@ -472,7 +522,9 @@ export function StepTemplateFormat({ control, errors, watch, setValue }: any) {
 
         {/* ———————— Aspect Ratios Checkboxes ———————— */}
         <div>
-          <p className="font-medium mb-2">Aspect ratios:</p>
+          <p className="font-medium mb-2">
+            Aspect ratios: <Req />
+          </p>
           <div className="flex flex-wrap gap-4">
             {['16_9', '1_1', '9_16'].map((f) => (
               <label key={f} className="flex items-center gap-2">

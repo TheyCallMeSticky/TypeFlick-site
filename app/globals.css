@@ -7,6 +7,9 @@
 /* 3. Autres imports */
 @import 'tw-animate-css';
 
+
+
+
 /* 4. Variables CSS (light + dark) */
 @layer base {
   :root {
@@ -27,6 +30,7 @@
     --radius: 0.5rem;
     --danger: 0 84.2% 60.2%;
     --danger-foreground: 210 40% 98%;
+    
   }
 
   .dark {

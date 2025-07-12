@@ -1,6 +1,6 @@
 {
-  "id": "8b803ded-403e-48ab-b224-28d9ebb2dcba",
-  "prevId": "261fd993-fb2c-43e7-89d6-cd58786c5f58",
+  "id": "8c66452f-b7e5-4a52-9be5-64bfccb14f31",
+  "prevId": "a5e75ac8-5b01-4276-a1a5-619ba93d7681",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -52,8 +52,12 @@
           "name": "activity_logs_team_id_teams_id_fk",
           "tableFrom": "activity_logs",
           "tableTo": "teams",
-          "columnsFrom": ["team_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -61,8 +65,12 @@
           "name": "activity_logs_user_id_users_id_fk",
           "tableFrom": "activity_logs",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -128,8 +136,12 @@
           "name": "invitations_team_id_teams_id_fk",
           "tableFrom": "invitations",
           "tableTo": "teams",
-          "columnsFrom": ["team_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -137,8 +149,12 @@
           "name": "invitations_invited_by_users_id_fk",
           "tableFrom": "invitations",
           "tableTo": "users",
-          "columnsFrom": ["invited_by"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "invited_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -191,8 +207,12 @@
           "name": "team_members_user_id_users_id_fk",
           "tableFrom": "team_members",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -200,8 +220,12 @@
           "name": "team_members_team_id_teams_id_fk",
           "tableFrom": "team_members",
           "tableTo": "teams",
-          "columnsFrom": ["team_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -280,12 +304,16 @@
         "teams_stripe_customer_id_unique": {
           "name": "teams_stripe_customer_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["stripe_customer_id"]
+          "columns": [
+            "stripe_customer_id"
+          ]
         },
         "teams_stripe_subscription_id_unique": {
           "name": "teams_stripe_subscription_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["stripe_subscription_id"]
+          "columns": [
+            "stripe_subscription_id"
+          ]
         }
       },
       "policies": {},
@@ -348,7 +376,9 @@
         "templates_slug_unique": {
           "name": "templates_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["slug"]
+          "columns": [
+            "slug"
+          ]
         }
       },
       "policies": {},
@@ -418,7 +448,9 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
@@ -448,16 +480,89 @@
           "name": "video_collaborators_video_id_videos_id_fk",
           "tableFrom": "video_collaborators",
           "tableTo": "videos",
-          "columnsFrom": ["video_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
+          "columnsFrom": [
+            "video_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "video_collaborators_video_id_name_pk": {
           "name": "video_collaborators_video_id_name_pk",
-          "columns": ["video_id", "name"]
+          "columns": [
+            "video_id",
+            "name"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.video_metadata": {
+      "name": "video_metadata",
+      "schema": "",
+      "columns": {
+        "video_id": {
+          "name": "video_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "platform": {
+          "name": "platform",
+          "type": "seo_platform_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hashtags": {
+          "name": "hashtags",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "video_metadata_video_id_videos_id_fk": {
+          "name": "video_metadata_video_id_videos_id_fk",
+          "tableFrom": "video_metadata",
+          "tableTo": "videos",
+          "columnsFrom": [
+            "video_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "video_metadata_video_id_platform_pk": {
+          "name": "video_metadata_video_id_platform_pk",
+          "columns": [
+            "video_id",
+            "platform"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -488,6 +593,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "job_uuid": {
+          "name": "job_uuid",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "output_path": {
           "name": "output_path",
           "type": "text",
@@ -501,6 +612,12 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'pending'"
+        },
+        "progress": {
+          "name": "progress",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         },
         "duration_ms": {
           "name": "duration_ms",
@@ -541,9 +658,13 @@
           "name": "video_variants_video_id_videos_id_fk",
           "tableFrom": "video_variants",
           "tableTo": "videos",
-          "columnsFrom": ["video_id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
+          "columnsFrom": [
+            "video_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -637,6 +758,13 @@
           "notNull": false,
           "default": "'pending'"
         },
+        "publish_targets": {
+          "name": "publish_targets",
+          "type": "publish_target_enum[]",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -658,8 +786,12 @@
           "name": "videos_user_id_users_id_fk",
           "tableFrom": "videos",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -667,8 +799,12 @@
           "name": "videos_template_id_templates_id_fk",
           "tableFrom": "videos",
           "tableTo": "templates",
-          "columnsFrom": ["template_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "template_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -681,15 +817,43 @@
     }
   },
   "enums": {
+    "public.publish_target_enum": {
+      "name": "publish_target_enum",
+      "schema": "public",
+      "values": [
+        "youtube",
+        "tiktok",
+        "instagram"
+      ]
+    },
+    "public.seo_platform_enum": {
+      "name": "seo_platform_enum",
+      "schema": "public",
+      "values": [
+        "youtube",
+        "instagram",
+        "tiktok",
+        "x"
+      ]
+    },
     "public.video_format_enum": {
       "name": "video_format_enum",
       "schema": "public",
-      "values": ["16_9", "1_1", "9_16"]
+      "values": [
+        "16_9",
+        "1_1",
+        "9_16"
+      ]
     },
     "public.video_status_enum": {
       "name": "video_status_enum",
       "schema": "public",
-      "values": ["pending", "processing", "done", "failed"]
+      "values": [
+        "pending",
+        "processing",
+        "done",
+        "failed"
+      ]
     }
   },
   "schemas": {},

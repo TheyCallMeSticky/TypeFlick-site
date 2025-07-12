@@ -8,35 +8,31 @@ import { db } from '@/lib/db'
 import { videos, videoVariants } from '@/lib/db/schema'
 import { getSession } from '@/lib/auth/session'
 
-const FILES_ROOT  = '/app/files'
-const AUDIO_DIR   = path.join(FILES_ROOT, 'audio')
-const IMAGE_DIR   = path.join(FILES_ROOT, 'images')
-const VIDEO_DIR   = path.join(FILES_ROOT, 'videos')
+const FILES_ROOT = '/app/files'
+const AUDIO_DIR = path.join(FILES_ROOT, 'audio')
+const IMAGE_DIR = path.join(FILES_ROOT, 'images')
+const VIDEO_DIR = path.join(FILES_ROOT, 'videos')
 
-
-const stripAppFiles = (p: string) => p.replace(/^\/?app\/files\//, '') 
+const stripAppFiles = (p: string) => p.replace(/^\/?app\/files\//, '')
 
 const toAbs = (raw: string): string => {
   let p = raw
 
-  if (p.startsWith('/files/')) p = p.slice(7)           
-  p = stripAppFiles(p)                                  
+  if (p.startsWith('/files/')) p = p.slice(7)
+  p = stripAppFiles(p)
 
-  if (path.isAbsolute(p)) return p                      
+  if (path.isAbsolute(p)) return p
 
   if (p.startsWith('audio/') || p.startsWith('images/') || p.startsWith('videos/'))
-    return path.join(FILES_ROOT, p)               
+    return path.join(FILES_ROOT, p)
 
-  if (p.endsWith('.mp3'))               return path.join(AUDIO_DIR,  p)
-  if (/\.(png|jpe?g|webp)$/i.test(p))   return path.join(IMAGE_DIR,  p)
+  if (p.endsWith('.mp3')) return path.join(AUDIO_DIR, p)
+  if (/\.(png|jpe?g|webp)$/i.test(p)) return path.join(IMAGE_DIR, p)
 
-  return path.join(VIDEO_DIR, p)                      
+  return path.join(VIDEO_DIR, p)
 }
 
-export const DELETE = async (
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) => {
+export const DELETE = async (_req: Request, { params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params
   const videoId = Number(id)
 

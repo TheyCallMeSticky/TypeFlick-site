@@ -159,10 +159,10 @@ export const videoVariants = pgTable('video_variants', {
     .notNull()
     .references(() => videos.id, { onDelete: 'cascade' }),
   format: videoFormat('format').notNull(),
-  jobUuid: varchar('job_uuid', { length: 36 }), 
+  jobUuid: varchar('job_uuid', { length: 36 }),
   outputPath: text('output_path'),
   status: videoStatus('status').default('pending'),
-  progress : integer('progress'),
+  progress: integer('progress'),
   durationMs: integer('duration_ms'),
   width: integer('width'),
   height: integer('height'),
@@ -179,6 +179,22 @@ export const videoCollaborators = pgTable(
     name: varchar('name', { length: 120 }).notNull()
   },
   (table) => [primaryKey({ columns: [table.videoId, table.name] })]
+)
+
+export const seoPlatform = pgEnum('seo_platform_enum', ['youtube', 'instagram', 'tiktok', 'x'])
+
+export const videoMetadata = pgTable(
+  'video_metadata',
+  {
+    videoId: integer('video_id')
+      .notNull()
+      .references(() => videos.id, { onDelete: 'cascade' }),
+    platform: seoPlatform('platform').notNull(),
+    title: text('title').notNull(),
+    description: text('description').notNull(),
+    hashtags: text('hashtags').array().$type<string[]>()
+  },
+  (t) => [primaryKey({ columns: [t.videoId, t.platform] })]
 )
 
 export type User = typeof users.$inferSelect

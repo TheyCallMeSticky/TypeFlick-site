@@ -1,0 +1,1 @@
+ALTER TABLE "video_metadata" ALTER COLUMN "hashtags" DROP NOT NULL;

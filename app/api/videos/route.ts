@@ -37,9 +37,9 @@ export async function POST(req: NextRequest) {
     // Merge IP into payload for logging
     const parsed = newVideoJobSchema.parse({ ...body, ipAddress: ip })
 
-    const { jobId } = await createVideoJob(parsed)
+    const { id } = await createVideoJob(parsed)
 
-    return NextResponse.json({ jobId }, { status: 201 })
+    return NextResponse.json({ id }, { status: 201 })
   } catch (err) {
     if (err instanceof Error) {
       return NextResponse.json({ error: err.message }, { status: 400 })

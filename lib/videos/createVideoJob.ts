@@ -7,17 +7,25 @@ import {
   videoCollaborators,
   activityLogs,
   templates,
-  videoStatus
+  videoStatus,
+  videoMetadata,
+  seoPlatform
 } from '@/lib/db/schema'
 import { eq, InferInsertModel } from 'drizzle-orm'
 import { enqueuePythonJob } from './enqueuePythonJob'
 import type { VideoFormat } from '@/lib/db/types' // alias = typeof videoFormat.enumValues[number]
+import { mapApiMeta, ApiMetaResult } from '@/lib/seo/mapSeoResult'
 
 /* ------------------------------------------------------------------ */
 /* Types helpers                                                      */
 /* ------------------------------------------------------------------ */
 type VariantInsert = InferInsertModel<typeof videoVariants>
 type VideoStatus = (typeof videoStatus.enumValues)[number]
+
+/* ------------------------------------------------------------------ */
+/* Helpers pour la table video_metadata                               */
+/* ------------------------------------------------------------------ */
+type SeoPlatform = (typeof seoPlatform.enumValues)[number]
 
 /* ------------------------------------------------------------------ */
 /* Validation schema                                                  */
@@ -112,8 +120,31 @@ export async function createVideoJob(rawInput: NewVideoJobInput) {
 
     return { videoId, templateSlug: tpl.slug, variants: inserted }
   }) // ↩︎ transaction ends here — data is committed
-
-  /* 3. Queue Python jobs ------------------------------------------- */
+  try {
+    const metaRes = await fetch(`${process.env.METADATA_API_URL}/api/generate-metadata`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        beat_name: input.beatName,
+        type_beat_name: input.typeBeat,
+        producer_name: input.primaryBeatmaker,
+        colab: input.collaborators?.join(',') ?? '',
+        buyLink: input.buyLink ?? ''
+      })
+    })
+    if (metaRes.ok) {
+      const meta = (await metaRes.json()) as ApiMetaResult
+      const rows = mapApiMeta(videoId, meta) // rows: MetaInsert[]
+      if (rows.length) {
+        await db.insert(videoMetadata).values(rows)
+      }
+    } else {
+      console.warn('SEO API error', await metaRes.text())
+    }
+  } catch (e) {
+    console.error('SEO API call failed', e)
+  }
+  /* 4. Queue Python jobs ------------------------------------------- */
   await Promise.all(
     variants.map((v) =>
       enqueuePythonJob({
@@ -134,8 +165,8 @@ export async function createVideoJob(rawInput: NewVideoJobInput) {
     )
   )
 
-  /* 4. Return ------------------------------------------------------ */
-  return { jobId: videoId }
+  /* 5. Return ------------------------------------------------------ */
+  return { id: videoId }
 }
 
 /* ------------------------------------------------------------------ */
