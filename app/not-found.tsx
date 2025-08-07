@@ -1,12 +1,12 @@
 import Link from 'next/link'
-import { TypeFlickLogoNoText } from '@/components/ui/logo'
+import { TypeFlickLogoBottomText } from '@/components/ui/logo'
 
 export default function NotFound() {
   return (
     <div className="flex items-center justify-center min-h-[100dvh]">
       <div className="max-w-md space-y-8 p-4 text-center">
         <div className="flex justify-center">
-          <TypeFlickLogoNoText className="h-8" />
+          <TypeFlickLogoBottomText className="h-20" />
         </div>
         <h1 className="text-4xl font-bold text-accent-100 tracking-tight">Page Not Found</h1>
         <p className="text-base text-text-100">

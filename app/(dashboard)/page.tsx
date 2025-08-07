@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { TypeFlickLogoText } from '@/components/ui/logo'
+import { TypeFlickLogoBottomText } from '@/components/ui/logo'
 import { ArrowRight, MusicIcon, PaletteIcon, VideoIcon } from 'lucide-react'
 
 export default function HomePage() {
@@ -9,7 +9,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mx-auto max-w-4xl">
             <div className="flex justify-center">
-              <TypeFlickLogoText className="h-90" />
+              <TypeFlickLogoBottomText className="h-90" />
             </div>
             <h1 className="mt-10 text-4xl font-bold text-accent-200 tracking-tight sm:text-5xl md:text-6xl ">
               Bring Your Beats to Life

@@ -13,44 +13,47 @@
 /* 4. Variables CSS (light + dark) */
 @layer base {
   :root {
-    --primary-100: 300 100% 50%;
-    --primary-200: 300 100% 69%;
-    --primary-300: 300 100% 92%;
+    /* Primary – logo red */
+    --primary-100: 4 89% 49%;
+    --primary-200: 4 86% 69%;
+    --primary-300: 4 85% 90%;
 
-    --accent-100: 180 100% 50%;
-    --accent-200: 181 100% 30%;
+    /* Accent – même rouge (ou gris neutre si tu préfères) */
+    --accent-100: 4 89% 49%;
+    --accent-200: 0 0% 73%;
 
-    --text-100: 0 0% 100%;
-    --text-200: 0 0% 88%;
+    /* Text */
+    --text-100: 40 29% 94%;
+    --text-200: 0 0% 80%;
 
-    --bg-100: 0 0% 10%;
-    --bg-200: 0 0% 16%;
-    --bg-300: 0 0% 25%;
+    /* Background (dark UI) */
+    --bg-100: 0 0% 5%;
+    --bg-200: 0 0% 10%;
+    --bg-300: 0 0% 15%;
 
     --radius: 0.5rem;
     --danger: 0 84.2% 60.2%;
     --danger-foreground: 210 40% 98%;
-    
   }
 
   .dark {
-    --primary-100: 300 100% 50%;
-    --primary-200: 300 100% 69%;
-    --primary-300: 300 100% 92%;
+    /* Même palette pour l’instant */
+    --primary-100: 4 89% 49%;
+    --primary-200: 4 86% 69%;
+    --primary-300: 4 85% 90%;
 
-    --accent-100: 180 100% 50%;
-    --accent-200: 181 100% 30%;
+    --accent-100: 4 89% 49%;
+    --accent-200: 0 0% 73%;
 
-    --text-100: 0 0% 100%;
-    --text-200: 0 0% 88%;
+    --text-100: 40 29% 94%;
+    --text-200: 0 0% 80%;
 
-    --bg-100: 0 0% 10%;
-    --bg-200: 0 0% 16%;
-    --bg-300: 0 0% 25%;
+    --bg-100: 0 0% 5%;
+    --bg-200: 0 0% 10%;
+    --bg-300: 0 0% 15%;
 
     --danger: 0 84.2% 60.2%;
     --danger-foreground: 210 40% 98%;
-    /* ...etc. */
   }
 }
 

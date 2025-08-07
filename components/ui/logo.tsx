@@ -24,3 +24,14 @@ export function TypeFlickLogoText({ className, ...rest }: LogoProps) {
     />
   )
 }
+
+export function TypeFlickLogoBottomText({ className, ...rest }: LogoProps) {
+  return (
+    <img
+      src="/logo_text_under.png"
+      alt="TypeFlick Logo"
+      className={twMerge('h-8', className)}
+      {...rest}
+    />
+  )
+}

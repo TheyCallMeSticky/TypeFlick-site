@@ -15,7 +15,7 @@ import { signOut } from '@/app/(login)/actions'
 import { useRouter } from 'next/navigation'
 import { User } from '@/lib/db/schema'
 import useSWR, { mutate } from 'swr'
-import { TypeFlickLogoNoText } from '@/components/ui/logo'
+import { TypeFlickLogoText } from '@/components/ui/logo'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -82,7 +82,7 @@ function Header() {
     <header className="border-b border-bg-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
-          <TypeFlickLogoNoText className="h-8" />
+          <TypeFlickLogoText className="h-8" />
         </Link>
         <div className="flex items-center space-x-4">
           <Suspense fallback={<div className="h-9" />}>
