@@ -24,7 +24,6 @@ export function TypeFlickLogoText({ className, ...rest }: LogoProps) {
     />
   )
 }
-
 export function TypeFlickLogoBottomText({ className, ...rest }: LogoProps) {
   return (
     <img

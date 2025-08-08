@@ -1,10 +1,9 @@
 'use server'
 
-import { getUser, getUserWithTeam } from '@/lib/db/queries'
+import { getUser } from '@/lib/db/queries'
 import { User } from '@/lib/db/schema'
 
-export async function getUwT() {
+export async function getCurrentUser() {
   const user = (await getUser()) as User
-  const userWithTeam = await getUserWithTeam(user.id)
-  return userWithTeam
+  return user
 }

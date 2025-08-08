@@ -1,9 +1,9 @@
 import 'dotenv/config'
 import { db } from './drizzle'
-import { users, teams, teamMembers, templates } from './schema'
+import { users, templates } from './schema'
 import { hashPassword } from '@/lib/auth/session'
 
-async function createInitialUserAndTeam() {
+async function createInitialUser() {
   const email = 'test@test.com'
   const password = 'admin123'
 
@@ -16,15 +16,7 @@ async function createInitialUserAndTeam() {
     })
     .returning()
 
-  const [team] = await db.insert(teams).values({ name: 'Test Team' }).returning()
-
-  await db.insert(teamMembers).values({
-    teamId: team.id,
-    userId: user.id,
-    role: 'owner'
-  })
-
-  console.log(`✅ User ${email} / ${password} created with team "${team.name}"`)
+  console.log(`✅ User ${email} / ${password} created`)
 }
 
 async function seedTemplates() {
@@ -62,7 +54,7 @@ async function seedTemplates() {
 }
 
 async function main() {
-  await createInitialUserAndTeam()
+  await createInitialUser()
   await seedTemplates()
 }
 

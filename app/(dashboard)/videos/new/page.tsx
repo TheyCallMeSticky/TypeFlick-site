@@ -13,7 +13,7 @@ import { Loader2, Check, XCircle } from 'lucide-react'
 import Image from 'next/image'
 import useSWR from 'swr'
 import { User } from '@/lib/db/schema'
-import { getUwT } from './actions'
+import { getCurrentUser } from './actions'
 
 const Req = () => (
   <span aria-hidden className="text-red-600">
@@ -131,15 +131,14 @@ export default function VideoWizard() {
       // 1. Upload assets (stub)
       const audioPath = await uploadFile(data.audioFile, 'audio')
       const imagePath = await uploadFile(data.imageFile, 'image')
-      const userWithTeam = await getUwT()
+      const user = await getCurrentUser()
 
       // 2. POST to API
       const res = await fetch('/api/videos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: userWithTeam.user.id,
-          teamId: userWithTeam.teamId,
+          userId: user.id,
           primaryBeatmaker: data.primaryBeatmaker,
           collaborators: data.collaborators
             ?.split(',')

@@ -15,7 +15,6 @@ import { createVideoJob, newVideoJobSchema } from '@/lib/videos/createVideoJob'
  * Expected JSON body :
  * {
  *   userId: number,
- *   teamId: number,
  *   primaryBeatmaker: string,
  *   collaborators?: string[],
  *   beatName: string,

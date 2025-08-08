@@ -6,7 +6,7 @@ export default function NotFound() {
     <div className="flex items-center justify-center min-h-[100dvh]">
       <div className="max-w-md space-y-8 p-4 text-center">
         <div className="flex justify-center">
-          <TypeFlickLogoBottomText className="h-20" />
+          <TypeFlickLogoBottomText className="h-25" />
         </div>
         <h1 className="text-4xl font-bold text-accent-100 tracking-tight">Page Not Found</h1>
         <p className="text-base text-text-100">

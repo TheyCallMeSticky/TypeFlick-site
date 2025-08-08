@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { PlainInput } from '@/components/ui/plain-input'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Loader2 } from 'lucide-react'
 import { signIn, signUp } from './actions'
 import { ActionState } from '@/lib/auth/middleware'
@@ -76,6 +77,93 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
             </div>
           </div>
 
+          {/* Opt-in RGPD pour l'inscription uniquement */}
+          {mode === 'signup' && (
+            <div className="space-y-4 border-t border-gray-200 pt-6">
+              <div className="text-sm font-medium text-accent-200 mb-3">
+                Acceptation des conditions (obligatoire)
+              </div>
+              
+              {/* Acceptation des CGU */}
+              <div className="flex items-start space-x-3">
+                <Checkbox 
+                  id="accept_terms" 
+                  name="accept_terms" 
+                  required 
+                  className="mt-1"
+                />
+                <Label htmlFor="accept_terms" className="text-sm text-text-200 leading-5">
+                  J'accepte les{' '}
+                  <Link 
+                    href="/legal/conditions-generales-utilisation" 
+                    target="_blank"
+                    className="text-primary-100 hover:text-primary-200 underline"
+                  >
+                    Conditions Générales d'Utilisation
+                  </Link>
+                  {' '}et les{' '}
+                  <Link 
+                    href="/legal/conditions-generales-vente" 
+                    target="_blank"
+                    className="text-primary-100 hover:text-primary-200 underline"
+                  >
+                    Conditions Générales de Vente
+                  </Link>
+                </Label>
+              </div>
+
+              {/* Consentement RGPD */}
+              <div className="flex items-start space-x-3">
+                <Checkbox 
+                  id="accept_privacy" 
+                  name="accept_privacy" 
+                  required 
+                  className="mt-1"
+                />
+                <Label htmlFor="accept_privacy" className="text-sm text-text-200 leading-5">
+                  J'accepte le traitement de mes données personnelles conformément à la{' '}
+                  <Link 
+                    href="/legal/politique-confidentialite" 
+                    target="_blank"
+                    className="text-primary-100 hover:text-primary-200 underline"
+                  >
+                    Politique de confidentialité
+                  </Link>
+                </Label>
+              </div>
+
+              {/* Consentement marketing (optionnel) */}
+              <div className="flex items-start space-x-3">
+                <Checkbox 
+                  id="accept_marketing" 
+                  name="accept_marketing" 
+                  className="mt-1"
+                />
+                <Label htmlFor="accept_marketing" className="text-sm text-text-200 leading-5">
+                  J'accepte de recevoir des communications marketing par email (optionnel)
+                </Label>
+              </div>
+
+              <div className="text-xs text-text-300 mt-3 p-3 bg-gray-50 rounded-lg">
+                <p className="mb-2">
+                  <strong>Vos droits :</strong> Vous disposez d'un droit d'accès, de rectification, 
+                  de suppression et d'opposition au traitement de vos données personnelles.
+                </p>
+                <p>
+                  Pour exercer ces droits, consultez notre{' '}
+                  <Link 
+                    href="/legal/politique-confidentialite" 
+                    target="_blank"
+                    className="text-primary-100 hover:text-primary-200 underline"
+                  >
+                    Politique de confidentialité
+                  </Link>
+                  {' '}ou contactez-nous directement.
+                </p>
+              </div>
+            </div>
+          )}
+
           {state?.error && <div className="text-red-500 text-sm">{state.error}</div>}
 
           <div>
@@ -124,6 +212,30 @@ export function Login({ mode = 'signin' }: { mode?: 'signin' | 'signup' }) {
               className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-900 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-100"
             >
               {mode === 'signin' ? 'Create an account' : 'Sign in to existing account'}
+            </Link>
+          </div>
+        </div>
+
+        {/* Liens légaux en bas de page */}
+        <div className="mt-8 text-center">
+          <div className="flex flex-wrap justify-center gap-4 text-xs text-text-300">
+            <Link 
+              href="/legal/mentions-legales" 
+              className="hover:text-text-200 transition-colors"
+            >
+              Mentions légales
+            </Link>
+            <Link 
+              href="/legal/politique-confidentialite" 
+              className="hover:text-text-200 transition-colors"
+            >
+              Confidentialité
+            </Link>
+            <Link 
+              href="/legal/politique-cookies" 
+              className="hover:text-text-200 transition-colors"
+            >
+              Cookies
             </Link>
           </div>
         </div>

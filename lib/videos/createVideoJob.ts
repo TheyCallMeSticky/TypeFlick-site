@@ -33,7 +33,6 @@ type publishTarget = (typeof publishTarget.enumValues)[number]
 export const newVideoJobSchema = z.object({
   /* contexte */
   userId: z.number().int().positive(),
-  teamId: z.number().int().positive(),
   ipAddress: z.string().optional(),
 
   /* step 1 – text info */
@@ -105,7 +104,6 @@ export async function createVideoJob(rawInput: NewVideoJobInput) {
 
     /* (d) activity log ------------------------------------------- */
     await tx.insert(activityLogs).values({
-      teamId: input.teamId,
       userId: input.userId,
       action: 'CREATE_VIDEO',
       ipAddress: input.ipAddress ?? null
@@ -174,17 +172,15 @@ export async function createVideoJob(rawInput: NewVideoJobInput) {
 /* ------------------------------------------------------------------ */
 export async function markVideoStatus(params: {
   videoId: number
-  teamId: number
   status: 'done' | 'failed'
   userId?: number | null
   ipAddress?: string | null
 }) {
-  const { videoId, teamId, status, userId = null, ipAddress = null } = params
+  const { videoId, status, userId = null, ipAddress = null } = params
 
   await db.transaction(async (tx) => {
     await tx.update(videos).set({ status }).where(eq(videos.id, videoId))
     await tx.insert(activityLogs).values({
-      teamId,
       userId,
       action: status === 'done' ? 'VIDEO_DONE' : 'VIDEO_FAILED',
       ipAddress

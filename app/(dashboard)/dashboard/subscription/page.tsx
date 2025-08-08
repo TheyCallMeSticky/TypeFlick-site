@@ -3,13 +3,13 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import useSWR from 'swr'
-import { TeamDataWithMembers } from '@/lib/db/schema'
+import { User } from '@/lib/db/schema'
 import { customerPortalAction } from '@/lib/payments/actions'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function SubscriptionPage() {
-  const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher)
+  const { data: userData } = useSWR<User>('/api/user/subscription', fetcher)
 
   return (
     <section className="flex-1 p-4 lg:p-8">
@@ -25,11 +25,11 @@ export default function SubscriptionPage() {
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
               <div className="mb-4 sm:mb-0">
-                <p className="font-medium">Current Plan: {teamData?.planName || 'Free'}</p>
+                <p className="font-medium">Current Plan: {userData?.planName || 'Free'}</p>
                 <p className="text-sm text-muted-foreground">
-                  {teamData?.subscriptionStatus === 'active'
+                  {userData?.subscriptionStatus === 'active'
                     ? 'Billed monthly'
-                    : teamData?.subscriptionStatus === 'trialing'
+                    : userData?.subscriptionStatus === 'trialing'
                       ? 'Trial period'
                       : 'No active subscription'}
                 </p>

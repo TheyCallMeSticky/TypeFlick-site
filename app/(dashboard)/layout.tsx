@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation'
 import { User } from '@/lib/db/schema'
 import useSWR, { mutate } from 'swr'
 import { TypeFlickLogoText } from '@/components/ui/logo'
+import { Footer } from '@/components/ui/footer'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -98,7 +99,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <section className="flex flex-col min-h-screen">
       <Header />
-      {children}
+      <main className="flex-1">{children}</main>
+      <Footer />
     </section>
   )
 }
