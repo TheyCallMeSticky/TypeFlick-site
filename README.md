@@ -58,7 +58,7 @@ This will create the following user and team:
 - User: `test@test.com`
 - Password: `admin123`
 
-You can also create new users through the `/sign-up` route.
+You can also create new users through the `/auth` route.
 
 Finally, run the Next.js development server:
 

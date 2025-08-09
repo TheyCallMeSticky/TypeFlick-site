@@ -1,3 +1,4 @@
+//app/(dashboard)/layout.tsx
 'use client'
 
 import Link from 'next/link'
@@ -39,7 +40,7 @@ function UserMenu() {
           Pricing
         </Link>
         <Button variant="outline" asChild className="rounded-full">
-          <Link href="/sign-up">Sign Up</Link>
+          <Link href="/auth">Sign In</Link>
         </Button>
       </>
     )
@@ -58,7 +59,10 @@ function UserMenu() {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="flex flex-col gap-1">
+      <DropdownMenuContent
+        align="end"
+        className="flex flex-col gap-1 bg-bg-200 border border-bg-300 shadow-lg rounded-md p-1 min-w-[160px]"
+      >
         <DropdownMenuItem className="cursor-pointer">
           <Link href="/dashboard" className="flex w-full items-center">
             <Home className="mr-2 h-4 w-4" />

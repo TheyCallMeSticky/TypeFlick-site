@@ -1,3 +1,4 @@
+//app/(dashboard)/layout.tsx
 import { Button } from '@/components/ui/button'
 import { TypeFlickLogoBottomText } from '@/components/ui/logo'
 import { ArrowRight, MusicIcon, PaletteIcon, VideoIcon } from 'lucide-react'

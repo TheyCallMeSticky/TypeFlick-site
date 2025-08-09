@@ -1,3 +1,4 @@
+//app/(login)/action.ts
 'use server'
 
 import { z } from 'zod'
@@ -200,7 +201,7 @@ export const deleteAccount = validatedActionWithUser(deleteAccountSchema, async 
     })
     .where(eq(users.id, user.id))
   ;(await cookies()).delete('session')
-  redirect('/sign-in')
+  redirect('/auth')
 })
 
 const updateAccountSchema = z.object({

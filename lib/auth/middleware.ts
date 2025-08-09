@@ -59,7 +59,7 @@ export function withUser<T>(action: ActionWithUserFunction<T>) {
   return async (formData: FormData): Promise<T> => {
     const user = await getUser()
     if (!user) {
-      redirect('/sign-in')
+      redirect('/auth')
     }
 
     return action(formData, user)

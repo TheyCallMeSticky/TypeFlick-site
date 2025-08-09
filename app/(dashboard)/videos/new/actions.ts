@@ -1,3 +1,4 @@
+//app/(dashboard)/videos/new/actions.ts
 'use server'
 
 import { getUser } from '@/lib/db/queries'
